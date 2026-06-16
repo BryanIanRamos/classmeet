@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:practice1/screens/profile_screen.dart";
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -8,30 +7,22 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("HomeScreen", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.amberAccent,
+        title: Text("Hello Bryan"),
         centerTitle: true,
-        backgroundColor: Colors.green,
+        leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
         actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.message, color: Colors.white),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.notifications, color: Colors.white),
-          ),
+          IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.message)),
         ],
-        leading: Icon(Icons.menu, color: Colors.white),
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProfileScreen()),
-            );
-          },
-          child: Text("Go to profile"),
+          onPressed: () {},
+          child: Text(
+            "Centered Text",
+            style: TextStyle(color: Colors.blueAccent, fontSize: 34),
+          ),
         ),
       ),
     );
