@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:practice1/screens/welcome_screen.dart";
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,9 +19,15 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WelcomeScreen()),
+            );
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent),
           child: Text(
-            "Centered Text",
+            "Back to Login",
             style: TextStyle(color: Colors.blueAccent, fontSize: 34),
           ),
         ),
