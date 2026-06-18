@@ -1,4 +1,4 @@
-# practice1
+# ClassMeet
 
 A new Flutter project.
 
