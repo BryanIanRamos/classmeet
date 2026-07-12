@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:practice1/core/constants/app_theme.dart';
+import 'package:practice1/features/welcome_screen.dart';
 
 void main() {
   runApp(const WelcomeApp());
 }
 
-class WelcomeApp extends StatelessWidget {
-  const WelcomeApp({super.key});
+// Box Layout Widget
+// Temporary Widget
+class BoxLayout extends StatelessWidget {
+  final double width;
+  final double height;
+  final String title;
+
+  const BoxLayout({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: AppTheme.themeData,
-      home: SafeArea(
-        child: Scaffold(body: Center(child: Text('Hhead'))),
-      ),
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(border: Border.all(color: Colors.amber)),
+      child: Center(child: Text(title)),
     );
   }
 }

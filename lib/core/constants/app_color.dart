@@ -6,7 +6,7 @@ class AppColor {
 
   static final primary = HexColor('42807F');
   static final secondary = HexColor('0B4F5C');
-  final tertiary = HexColor('74B8BB');
+  static final tertiary = HexColor('74B8BB');
 
   static final background = HexColor('FFFFFF');
 
