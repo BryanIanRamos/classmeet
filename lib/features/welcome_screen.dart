@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:practice1/core/constants/app_color.dart';
 import 'package:practice1/core/constants/app_theme.dart';
 
-class WelcomeApp extends StatelessWidget {
-  const WelcomeApp({super.key});
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +65,7 @@ class WelcomeApp extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         print('Sign in has been Clicked!');
+                        GoRouter.of(context).go('/home');
                       },
                       child: SizedBox(
                         width: 200,
