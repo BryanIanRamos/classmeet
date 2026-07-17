@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:practice1/core/constants/app_color.dart';
-import 'package:practice1/core/constants/app_theme.dart';
+import 'package:practice1/core/theme/app_color.dart';
+import 'package:practice1/core/theme/app_theme.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});

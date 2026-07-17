@@ -14,6 +14,12 @@ class DashboardScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('Navigate to'),
+            ElevatedButton(
+              onPressed: () {
+                context.goNamed('materials');
+              },
+              child: Text('Go to sub routes'),
+            ),
             SizedBox(height: 5),
             ElevatedButton(
               onPressed: () {

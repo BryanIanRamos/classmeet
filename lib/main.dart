@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:practice1/features/dashboard/dashboard_screen.dart';
+import 'package:practice1/features/dashboard/materials_screen.dart';
 import 'package:practice1/features/feed/feed_screen.dart';
 import 'package:practice1/features/generate/generate_screen.dart';
 import 'package:practice1/features/home/home_screen.dart';
@@ -19,38 +20,46 @@ final GoRouter _router = GoRouter(
     GoRoute(
       name: RouterNames.welcome,
       path: '/',
-      builder: ((context, state) => WelcomeScreen()),
-    ),
-    GoRoute(
-      name: RouterNames.home,
-      path: '/home',
-      builder: ((context, state) => HomeScreen()),
+      builder: (context, state) => WelcomeScreen(),
     ),
     GoRoute(
       name: RouterNames.dashboard,
       path: '/dashboard',
-      builder: ((context, state) => DashboardScreen()),
+      builder: (context, state) => DashboardScreen(),
+      routes: [
+        GoRoute(
+          name: 'materials',
+          path: 'materials',
+          builder: (context, state) => MaterialsScreen(),
+        ),
+      ],
     ),
     GoRoute(
-      name: RouterNames.study,
-      path: '/study/:name',
-      builder: ((context, state) =>
-          StudyScreen(name: state.pathParameters['name']!)),
+      name: RouterNames.home,
+      path: '/home',
+      builder: (context, state) => HomeScreen(),
     ),
+
     GoRoute(
       name: RouterNames.generate,
       path: '/generate',
-      builder: ((context, state) => GenerateScreen()),
+      builder: (context, state) => GenerateScreen(),
     ),
     GoRoute(
       name: RouterNames.feed,
       path: '/feed',
-      builder: ((context, state) => FeedScreen()),
+      builder: (context, state) => FeedScreen(),
     ),
     GoRoute(
       name: RouterNames.messages,
       path: '/message',
       builder: (context, state) => MessageScreen(),
+    ),
+    GoRoute(
+      name: RouterNames.study,
+      path: '/study/:name',
+      builder: ((context, state) =>
+          StudyScreen(name: state.pathParameters['Bryan']!)),
     ),
   ],
 );
