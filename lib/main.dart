@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:practice1/features/dashboard/dashboard_screen.dart';
 import 'package:practice1/features/feed/feed_screen.dart';
@@ -8,10 +7,6 @@ import 'package:practice1/features/messages/message_screen.dart';
 import 'package:practice1/features/study/study_screen.dart';
 import 'package:practice1/features/welcome_screen.dart';
 import 'package:practice1/router/router_names.dart';
-
-void main() {
-  runApp(MaterialApp.router(title: 'Material Router', routerConfig: _router));
-}
 
 final GoRouter _router = GoRouter(
   initialLocation: '/',
