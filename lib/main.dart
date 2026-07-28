@@ -1,8 +1,15 @@
-import 'package:flutter/widgets.dart';
-import 'app.dart';
+import 'package:flutter/material.dart';
+import 'package:practice1/screens/home.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+  runApp(App());
+}
 
-  runApp(const App());
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(debugShowCheckedModeBanner: false, home: HomeScreen());
+  }
 }
