@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Home Screen")),
+      appBar: AppBar(title: const Text("Home Screenss")),
       floatingActionButton: FloatingActionButton(
         onPressed: fetchUser,
         child: Icon(Icons.access_alarm_outlined),
@@ -37,15 +37,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchUser() async {
-    print("Fetch User Clicked!");
-    const url = 'https://randomuser.me/api/?results=10';
-    final uri = Uri.parse(url);
-    final response = await http.get(uri);
-    final body = response.body;
-    final json = jsonDecode(body);
-    setState(() {
-      users = json['results'];
-    });
-    print('fetch user completed: $users');
+    try {
+      const url = 'https://randomuser.me/api/?results=10';
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+
+        setState(() {
+          users = json['results'];
+        });
+      } else {
+        debugPrint('HTTP Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Network Error: $e');
+    }
   }
 }
