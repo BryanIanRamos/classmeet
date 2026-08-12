@@ -12,17 +12,39 @@ class UserApi {
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
-        final decData = json['results'] as List<dynamic>;
-        final users = decData.map((data) {
+        final rawData = json['results'] as List<dynamic>;
+        final users = rawData.map((data) {
+          final name = UserName(
+            title: data['name']['title'],
+            first: data['name']['first'],
+            last: data['name']['last'],
+          );
+
+          final date = DateTime.parse(data['dob']['date']);
+
+          final dob = UserDob(date: date, age: data['dob']['age']);
+
+          final location = UserLocation(
+            city: data['location']['city'],
+            state: data['location']['state'],
+            country: data['location']['country'],
+            postcode: data['location']['postcode'].toString(),
+          );
+
           return User(
             gender: data['gender'],
             email: data['email'],
-            cell: data['cell'],
-            nat: data['nat'],
+            name: name,
+            dob: dob,
+            location: location,
           );
         }).toList();
-        print('Data retrieved successfully');
+
         return users;
+
+        // setState(() {
+        //   users = transform;
+        // });
       } else {
         debugPrint('Http Error: ${response.statusCode}');
         return [];

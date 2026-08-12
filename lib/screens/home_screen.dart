@@ -17,18 +17,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void initState() {
     super.initState();
-    fetchUser();
+    fetchUsers();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Home Screen")),
-      floatingActionButton: FloatingActionButton(onPressed: fetchUser),
+      floatingActionButton: FloatingActionButton(onPressed: fetchUsers),
       body: Center(
         child: Column(
           children: [
-            Text("Displayed Data"),
+            Text('Displayed Data'),
             SizedBox(),
             Expanded(
               child: ListView.builder(
@@ -36,11 +36,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   final user = users[index];
                   final email = user.email;
-                  final cell = user.cell;
-
+                  final gender = user.gender;
+                  final fullname = user.fullName;
                   return ListTile(
-                    title: Text("$email"),
-                    subtitle: Text("$cell"),
+                    tileColor: gender == 'male'
+                        ? Colors.blueAccent
+                        : Colors.pinkAccent,
+                    title: Text('$email'),
+                    subtitle: Text('$fullname'),
                   );
                 },
               ),
@@ -51,8 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void fetchUser() async {
+  void fetchUsers() async {
     final data = await UserApi().fetchUsers();
+
     setState(() {
       users = data;
     });
