@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:practice1/models/user/user.dart';
+import 'package:practice1/models/user/user_dob.dart';
+import 'package:practice1/models/user/user_name.dart';
+import 'package:practice1/models/user/user_picture.dart';
 
 class UserApi {
   Future<List<User>> fetchUsers() async {
@@ -13,7 +16,17 @@ class UserApi {
         final json = jsonDecode(response.body);
         final data = json['results'] as List<dynamic>;
         final user = data.map((data) {
-          return User.fromMap(data);
+          final name = UserName.fromMap(data['name']);
+          final pic = UserPicture.fromMap(data['picture']);
+          final dob = UserDob.fromMap(data['dob']);
+
+          return User(
+            gender: data['gender'],
+            email: data['email'],
+            name: name,
+            pic: pic,
+            dob: dob,
+          );
         }).toList();
 
         return user;
