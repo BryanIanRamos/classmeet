@@ -1,8 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:practice1/models/user.dart';
 import 'package:practice1/services/user_api.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,8 +9,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<User> users = [];
+  List<dynamic> users = [];
 
+  @override
   void initState() {
     super.initState();
     fetchUsers();
@@ -24,12 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Home Screen")),
-      floatingActionButton: FloatingActionButton(onPressed: fetchUsers),
       body: Center(
         child: Column(
           children: [
-            Text('Displayed Data'),
-            SizedBox(),
+            Text("Information"),
             Expanded(
               child: ListView.builder(
                 itemCount: users.length,
@@ -37,13 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   final user = users[index];
                   final email = user.email;
                   final gender = user.gender;
-                  final fullname = user.fullName;
+              
                   return ListTile(
-                    tileColor: gender == 'male'
-                        ? Colors.blueAccent
-                        : Colors.pinkAccent,
                     title: Text('$email'),
-                    subtitle: Text('$fullname'),
+                    subtitle: Text('$gender'),
                   );
                 },
               ),
