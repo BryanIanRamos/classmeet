@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:practice1/main_wrapper.dart';
-import 'package:practice1/router/app_router.dart';
+import 'package:practice1/screens/home_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,13 +9,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Practice 1',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+
+      home: MaterialApp(
+        darkTheme: ThemeData.dark(),
+        debugShowCheckedModeBanner: false,
+        home: HomeScreen(),
       ),
-      onGenerateRoute: AppRouter.onGenerateRoute,
-      initialRoute: '/',
-      home: const MainWrapper(),
     );
   }
 }
