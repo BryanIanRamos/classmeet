@@ -11,81 +11,70 @@ class ToAddPage extends StatefulWidget {
 }
 
 class _ToAddPageState extends State<ToAddPage> {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('To Add Page')),
-      body: ListView(
-        children: [
-          TextField(
-            controller: titleController,
-            decoration: InputDecoration(hintText: 'Title'),
+      appBar: AppBar(title: Text("Add Task Page")),
+      body: Padding(
+        padding: EdgeInsets.all(4),
+        child: Center(
+          child: Column(
+            children: [
+              Text('Please Fill the blanks'),
+              TextField(decoration: InputDecoration(labelText: 'title')),
+              TextField(
+                decoration: InputDecoration(labelText: 'description'),
+                keyboardType: TextInputType.multiline,
+                minLines: 4,
+                maxLines: 8,
+                textAlign: TextAlign.start,
+              ),
+              ElevatedButton(onPressed: submitTask, child: Text('Submit data')),
+            ],
           ),
-          TextField(
-            controller: descriptionController,
-            decoration: InputDecoration(hintText: 'Description'),
-            keyboardType: TextInputType.multiline,
-            minLines: 4,
-            maxLines: 8,
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(onPressed: submitData, child: Text("Click")),
-        ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print('Clicked!');
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
 
-  void submitData() async {
-    final title = titleController.text;
-    final description = descriptionController.text;
-
+  Future<void> submitTask() async {
+    const uri = 'http://127.0.0.1:8000/api/v1/public-tasks/';
     final body = {
-      'title': title,
-      'description': description,
-      'status': 'pending',
+      'title': 'title11',
+      'desciption': 'description',
+      'status': 'status11',
     };
 
     try {
-      const url = 'http://127.0.0.1:8000/api/v1/public-tasks/';
-      final uri = Uri.parse(url);
+      final url = Uri.parse(uri);
       final response = await http.post(
-        uri,
+        url,
         body: jsonEncode(body),
-        headers: {'Content-Type': 'application/json'},
+        // headers: {'Content-Type': 'Application/json'},
       );
 
       if (response.statusCode == 201) {
-        titleController.text = '';
-        descriptionController.text = '';
-
-        showSuccessMessage('Added Successfully');
-        print('Data Submitted');
+        showMessageResponse('Success', false);
+        print("Success");
       } else {
-        showErrorMessage('Request Failed');
-        print('Http request error: ${response.statusCode}');
+        showMessageResponse('Request Fail', true);
+        print("Http Error: ${response.statusCode}");
       }
     } catch (e) {
-      showErrorMessage('Request Failed');
       debugPrint('Network Error: $e');
     }
   }
 
-  void showSuccessMessage(String message) {
+  void showMessageResponse(String message, bool isError) {
     final snackBar = SnackBar(
       content: Text(message, style: TextStyle(color: Colors.white)),
-      backgroundColor: Colors.greenAccent,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void showErrorMessage(String message) {
-    final snackBar = SnackBar(
-      content: Text(message, style: TextStyle(color: Colors.white)),
-      duration: Duration(seconds: 1),
-      backgroundColor: Colors.redAccent,
+      backgroundColor: isError == true ? Colors.red : Colors.green,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
