@@ -13,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> items = [];
+  bool isNotLoading = false;
 
   @override
   void initState() {
@@ -32,24 +33,32 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: navigationToAddPage,
         label: Text('To do'),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Text('Tasks'),
-            Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(items[index]["title"] ?? "No title"),
-                    subtitle: Text(
-                      items[index]["description"] ?? "No description",
-                    ),
-                  );
-                },
-              ),
+      body: Visibility(
+        visible: isNotLoading,
+        replacement: Center(child: CircularProgressIndicator()),
+        child: RefreshIndicator(
+          onRefresh: fetchData,
+          child: Center(
+            child: Column(
+              children: [
+                Text('Tasks'),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: CircleAvatar(child: Text('$index')),
+                        title: Text(items[index]["title"] ?? "No title"),
+                        subtitle: Text(
+                          items[index]["description"] ?? "No description",
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -84,7 +93,11 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       snackBar('Error no data found');
       debugPrint("Network Error: $e");
-    } finally {}
+    } finally {
+      setState(() {
+        isNotLoading = true;
+      });
+    }
   }
 
   void snackBar(String message, {bool isError = false}) {
