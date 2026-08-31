@@ -41,8 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text('name'),
-                    subtitle: Text("Description"),
+                    title: Text(items[index]["title"] ?? "No title"),
+                    subtitle: Text(
+                      items[index]["description"] ?? "No description",
+                    ),
                   );
                 },
               ),
@@ -58,28 +60,37 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(context, route);
   }
 
+  // const uri = "http://localhost:8000/api/v1/public-tasks/";
+
   Future<void> fetchData() async {
-    const uri = "http://localhost:8000/api/v1/public-tasks/";
-    final url = Uri.parse(uri);
+    const url = "http://localhost:8000/api/v1/public-tasks/";
+    final uri = Uri.parse(url);
+    debugPrint("Code Running");
+
     try {
-      final response = await http.get(url);
-      // print("Data: \n Code: ${response.statusCode} | Data: ${json}");
+      final response = await http.get(uri);
+
       if (response.statusCode == 200) {
-        final json = jsonDecode(response.body) as Map;
-        final result = json['items'] as List;
+        final json = jsonDecode(response.body) as List;
+        // final result = json['items'] as List;
+
         setState(() {
-          items = result;
+          items = json;
         });
-      } else {}
+        snackBar('Data fetch Successfully');
+
+        debugPrint("Request Success | $json");
+      }
     } catch (e) {
+      snackBar('Error no data found');
       debugPrint("Network Error: $e");
-    }
+    } finally {}
   }
 
-  void showMessageResponse(String message, bool isError) {
+  void snackBar(String message, {bool isError = false}) {
     final snackBar = SnackBar(
-      content: Text(message, style: TextStyle(color: Colors.white)),
-      backgroundColor: isError == true ? Colors.red : Colors.green,
+      content: Text(message),
+      backgroundColor: isError ? Colors.redAccent : Colors.greenAccent,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }

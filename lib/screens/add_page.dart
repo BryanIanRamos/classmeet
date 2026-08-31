@@ -11,6 +11,16 @@ class ToAddPage extends StatefulWidget {
 }
 
 class _ToAddPageState extends State<ToAddPage> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,8 +31,12 @@ class _ToAddPageState extends State<ToAddPage> {
           child: Column(
             children: [
               Text('Please Fill the blanks'),
-              TextField(decoration: InputDecoration(labelText: 'title')),
               TextField(
+                controller: titleController,
+                decoration: InputDecoration(labelText: 'title'),
+              ),
+              TextField(
+                controller: descriptionController,
                 decoration: InputDecoration(labelText: 'description'),
                 keyboardType: TextInputType.multiline,
                 minLines: 4,
@@ -43,38 +57,49 @@ class _ToAddPageState extends State<ToAddPage> {
     );
   }
 
+  //  const uri = 'http://127.0.0.1:8000/api/v1/public-tasks/';
+  //   'title': 'title11',
+  //   'desciption': 'description',
+  //   'status': 'status11',
+
   Future<void> submitTask() async {
     const uri = 'http://127.0.0.1:8000/api/v1/public-tasks/';
-    final body = {
-      'title': 'title11',
-      'desciption': 'description',
-      'status': 'status11',
+    final url = Uri.parse(uri);
+
+    final form = {
+      'title': titleController.text,
+      'description': descriptionController.text,
+      'status': 'Pending',
     };
 
     try {
-      final url = Uri.parse(uri);
       final response = await http.post(
         url,
-        body: jsonEncode(body),
-        // headers: {'Content-Type': 'Application/json'},
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(form),
       );
 
-      if (response.statusCode == 201) {
-        showMessageResponse('Success', false);
-        print("Success");
+      if (titleController.text.isEmpty && descriptionController.text.isEmpty) {
+        snackBar("Please fill all the inputs", 'warning');
+      } else if (response.statusCode == 201) {
+        snackBar("Submitted!");
       } else {
-        showMessageResponse('Request Fail', true);
-        print("Http Error: ${response.statusCode}");
+        snackBar('Http error ${response.statusCode}', 'warning');
       }
+      // debugPrint("Network Error: ");
     } catch (e) {
-      debugPrint('Network Error: $e');
+      snackBar('Network error ${e}', 'error');
     }
   }
 
-  void showMessageResponse(String message, bool isError) {
+  void snackBar(String message, [String status = '']) {
     final snackBar = SnackBar(
-      content: Text(message, style: TextStyle(color: Colors.white)),
-      backgroundColor: isError == true ? Colors.red : Colors.green,
+      content: Text(message),
+      backgroundColor: status == 'error'
+          ? Colors.redAccent
+          : status == 'warning'
+          ? Colors.yellowAccent
+          : Colors.greenAccent,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
