@@ -7,11 +7,11 @@ class ClassMeetApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'ClassMeet',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
-      roueterConfig: appRouter,
+      routerConfig: appRouter,
     );
   }
 }
