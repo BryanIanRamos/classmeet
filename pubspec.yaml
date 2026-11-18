@@ -61,6 +61,14 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Images are 3x PNGs listed in lib/core/assets/app_images.dart; icons are
+  # SVG fallbacks for AppIcons. Check with `dart run tool/check_assets.dart`.
+  # Add each assets/images/<section>/ folder here once it has files.
+  assets:
+    - assets/images/common/
+    - assets/images/home/
+    - assets/icons/
+
   # Bundled static fonts (SIL OFL 1.1; licenses in assets/fonts/OFL-*.txt).
   fonts:
     - family: PlusJakartaSans
