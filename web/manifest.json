@@ -1,6 +1,6 @@
 {
-    "name": "practice1",
-    "short_name": "practice1",
+    "name": "ClassMeet",
+    "short_name": "ClassMeet",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
