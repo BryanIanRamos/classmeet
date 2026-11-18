@@ -1,0 +1,22 @@
+# Normalize line endings: LF in the repo and in the working tree, so files
+# Flutter regenerates (plugin registrants, etc.) don't show up as modified.
+* text=auto eol=lf
+
+# Windows scripts keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.ttc binary
+*.jar binary
+*.keystore binary
+*.jks binary
