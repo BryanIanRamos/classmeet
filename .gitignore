@@ -43,3 +43,19 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ClassMeet local-only files (never commit)
+# Dev progress tracker
+/DEV_TRACKER.md
+# Local design cache: Figma exports, specs, renders, screenshots, inbox
+/design/
+# Secrets and signing
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+key.properties
+# Local dev-assistant config
+/CLAUDE.md
+/.claude/
