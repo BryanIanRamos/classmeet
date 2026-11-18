@@ -1,26 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Temporary app root (task 0.4). Replaced by the MaterialApp.router
-/// skeleton in task 0.8.
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+import 'core/router/app_router.dart';
+
+class ClassMeetApp extends ConsumerWidget {
+  const ClassMeetApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
       title: 'ClassMeet',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-      home: const _PlaceholderHome(),
+      routerConfig: ref.watch(routerProvider),
     );
-  }
-}
-
-class _PlaceholderHome extends StatelessWidget {
-  const _PlaceholderHome();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('ClassMeet')));
   }
 }
