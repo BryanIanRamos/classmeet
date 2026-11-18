@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:practice1/main_wrapper.dart';
-import 'package:practice1/router/app_router.dart';
 
+/// Temporary app root (task 0.4). Replaced by the MaterialApp.router
+/// skeleton in task 0.8.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Practice 1',
+      title: 'ClassMeet',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      onGenerateRoute: AppRouter.onGenerateRoute,
-      initialRoute: '/',
-      home: const MainWrapper(),
+      theme: ThemeData(useMaterial3: true),
+      home: const _PlaceholderHome(),
     );
+  }
+}
+
+class _PlaceholderHome extends StatelessWidget {
+  const _PlaceholderHome();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: Text('ClassMeet')));
   }
 }
