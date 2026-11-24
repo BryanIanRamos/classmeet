@@ -4,6 +4,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 /// App icons. Figma uses Lucide (`li:<name>` layers), so each icon maps to a
 /// [LucideIcons] glyph. The full audit of Figma names happens in task 2.13.
 abstract final class AppIcons {
+  static const arrowLeft = LucideIcons.arrowLeft;
+  static const arrowRight = LucideIcons.arrowRight;
+  static const arrowUp = LucideIcons.arrowUp;
   static const bell = LucideIcons.bell;
   static const bookOpen = LucideIcons.bookOpen;
   static const brain = LucideIcons.brain;
@@ -18,6 +21,9 @@ abstract final class AppIcons {
 
   /// Figma layer name (without the `li:` prefix) → glyph.
   static const Map<String, IconData> byFigmaName = {
+    'arrow-left': arrowLeft,
+    'arrow-right': arrowRight,
+    'arrow-up': arrowUp,
     'bell': bell,
     'book-open': bookOpen,
     'brain': brain,
