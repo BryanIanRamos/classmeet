@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// change with `flutter test --update-goldens test/goldens`.
 void main() {
   testWidgets('AppButton matrix', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1400, 1600));
+    await tester.binding.setSurfaceSize(const Size(1400, 1800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
