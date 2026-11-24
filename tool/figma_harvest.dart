@@ -14,7 +14,8 @@
 //                            and copy them to design/ref/<section>/<no>_<slug>.png.
 //                            Options: --scale 2 (default) --format png
 //                            Custom: images <label> --ids 1:2,3:4 --scale 3
-//   spec <frame id|all>      Write design/specs/<no>_<slug>.md (offline).
+//   spec <frame id|all|ds>   Write design/specs/<no>_<slug>.md (offline); ds
+//                            writes one spec per DS sheet to design/specs/ds/.
 //
 // Options
 //   --dry-run   List requests without sending anything (no token needed).
@@ -51,7 +52,7 @@ Future<void> main(List<String> argv) async {
       case 'images':
         await _images(client, target, args);
       case 'spec':
-        _spec(target);
+        target == 'ds' ? _specDesignSystem() : _spec(target);
       default:
         stderr.writeln('Unknown command "$command".\n\n$_usage');
         exitCode = 64;
@@ -206,12 +207,7 @@ void _spec(String? target) {
       : frames.where((f) => f.id == target).toList();
   if (selected.isEmpty) throw FigmaError(64, 'unknown frame "$target"');
 
-  final tokens = TokenNames.parse(
-    colorsSource: File('lib/core/theme/app_colors.dart').readAsStringSync(),
-    typographySource: File(
-      'lib/core/theme/app_typography.dart',
-    ).readAsStringSync(),
-  );
+  final tokens = _tokenNames();
   var written = 0;
   for (final frame in selected) {
     final cache = File(nodesCachePath(frame.section));
@@ -230,18 +226,59 @@ void _spec(String? target) {
       title: '${frame.no} ${frame.slug}',
       tokens: tokens,
     );
-    final out = File('$specsDir/${frame.fileStem}.md')
-      ..parent.createSync(recursive: true)
-      ..writeAsStringSync(md);
-    // Budget: about 4 characters per token, at most ~6k tokens per spec.
-    final estimate = md.length ~/ 4;
-    stdout.writeln(
-      'spec    ${out.path}  ~${estimate}t'
-      '${estimate > 6000 ? '  WARN over the 6k budget' : ''}',
-    );
+    _writeSpec('$specsDir/${frame.fileStem}.md', md);
     written++;
   }
   stdout.writeln('$written spec(s) written.');
+}
+
+/// One spec per Design System component sheet, in `design/specs/ds/`
+/// (the guideline boards are skipped).
+void _specDesignSystem() {
+  final cache = File(nodesCachePath('design-system'));
+  if (!cache.existsSync()) {
+    throw const FigmaError(64, 'run `nodes design-system` first');
+  }
+  final json = jsonDecode(cache.readAsStringSync()) as Map<String, dynamic>;
+  final page = findInNodesResponse(json, designSystemPage);
+  if (page == null) throw const FigmaError(64, 'Design System page missing');
+
+  final tokens = _tokenNames();
+  var written = 0;
+  final sheets = (page['children'] as List<dynamic>? ?? const [])
+      .cast<Map<String, dynamic>>();
+  for (final sheet in sheets) {
+    final name = sheet['name'] as String? ?? '';
+    if (sheet['type'] != 'FRAME' || name.contains('Guidelines')) continue;
+    final slug = name
+        .toLowerCase()
+        .replaceAll(RegExp('[^a-z0-9]+'), '_')
+        .replaceAll(RegExp(r'^_|_$'), '');
+    final id = sheet['id'] as String;
+    final md = condenseFrame(sheet, title: 'DS $name', tokens: tokens);
+    _writeSpec('$specsDir/ds/${slug}_${safeId(id)}.md', md);
+    written++;
+  }
+  stdout.writeln('$written component spec(s) written.');
+}
+
+TokenNames _tokenNames() => TokenNames.parse(
+  colorsSource: File('lib/core/theme/app_colors.dart').readAsStringSync(),
+  typographySource: File(
+    'lib/core/theme/app_typography.dart',
+  ).readAsStringSync(),
+);
+
+void _writeSpec(String path, String md) {
+  File(path)
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync(md);
+  // Budget: about 4 characters per token, at most ~6k tokens per spec.
+  final estimate = md.length ~/ 4;
+  stdout.writeln(
+    'spec    $path  ~${estimate}t'
+    '${estimate > 6000 ? '  WARN over the 6k budget' : ''}',
+  );
 }
 
 // ---------------------------------------------------------------- args
