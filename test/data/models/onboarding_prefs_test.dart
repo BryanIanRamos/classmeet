@@ -87,7 +87,7 @@ void main() {
       expect(StudyMethod.values.map((e) => e.caption), [
         'Review key terms and concepts',
         'Test your knowledge as you go',
-        "Study with friends and see who's on top",
+        "Compete with friends and see who's on top",
         'Learn with diagrams and mind maps',
         'Review the key points quickly',
         'Break down difficult topics',

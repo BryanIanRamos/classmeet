@@ -52,10 +52,11 @@ const samplePrograms = [
 
 /// The six subject chips of frame 97.
 const sampleSubjects = [
+  // In the order of the chips on 97.
   Subject(id: 'networking-1', name: 'Networking I'),
-  Subject(id: 'database-2', name: 'Database II'),
   Subject(id: 'computer-programming', name: 'Computer Programming'),
   Subject(id: 'intro-computing', name: 'Introduction to Computing'),
-  Subject(id: 'hci', name: 'HCI'),
+  Subject(id: 'database-2', name: 'Database II'),
   Subject(id: 'data-structures', name: 'Data Structures and Algorithms'),
+  Subject(id: 'hci', name: 'HCI'),
 ];

@@ -27,7 +27,7 @@ enum LearningLanguage {
 enum StudyMethod {
   flashcards('Flashcards', 'Review key terms and concepts'),
   practiceQuizzes('Practice quizzes', 'Test your knowledge as you go'),
-  studyParty('Study Party', "Study with friends and see who's on top"),
+  studyParty('Study Party', "Compete with friends and see who's on top"),
   visualSummaries('Visual summaries', 'Learn with diagrams and mind maps'),
   readingSummaries('Reading summaries', 'Review the key points quickly'),
   stepByStep('Step-by-step explanations', 'Break down difficult topics');

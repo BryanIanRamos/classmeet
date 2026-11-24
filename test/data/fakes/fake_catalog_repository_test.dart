@@ -30,11 +30,11 @@ void main() {
     final subjects = await repo.fetchSubjects();
     expect(subjects.map((s) => s.name), [
       'Networking I',
-      'Database II',
       'Computer Programming',
       'Introduction to Computing',
-      'HCI',
+      'Database II',
       'Data Structures and Algorithms',
+      'HCI',
     ]);
     expect(await repo.fetchSubjects(programId: 'csu-bsit'), hasLength(6));
   });
