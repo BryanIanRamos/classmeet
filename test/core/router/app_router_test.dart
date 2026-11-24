@@ -4,6 +4,7 @@ import 'package:classmeet/core/router/app_router.dart';
 import 'package:classmeet/core/router/not_found_screen.dart';
 import 'package:classmeet/core/router/routes.dart';
 import 'package:classmeet/core/widgets/buttons/app_button.dart';
+import 'package:classmeet/core/widgets/inputs/app_text_field.dart';
 import 'package:classmeet/features/auth/application/session_controller.dart';
 import 'package:classmeet/features/auth/presentation/screens/sign_up_screen.dart';
 import 'package:classmeet/features/home/presentation/screens/home_dashboard_screen.dart';
@@ -14,6 +15,7 @@ import 'package:classmeet/features/onboarding/presentation/screens/welcome_scree
 import 'package:classmeet/features/play/presentation/screens/play_hub_screen.dart';
 import 'package:classmeet/features/study/presentation/screens/reader_screen.dart';
 import 'package:classmeet/features/study/presentation/screens/study_screen.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -213,6 +215,24 @@ void main() {
       expect(find.byType(WelcomeScreen), findsOneWidget);
       await tapLink('Get started');
       expect(find.byType(SignUpScreen), findsOneWidget);
+      // The real sign-up form (D-19): username, email, password.
+      const form = {
+        'Username': 'ollie',
+        'Email': 'ollie@example.com',
+        'Password': 'secret123',
+      };
+      for (final MapEntry(key: field, value: text) in form.entries) {
+        await tester.enterText(
+          find.descendant(
+            of: find.byWidgetPredicate(
+              (w) => w is AppTextField && w.placeholder == field,
+            ),
+            matching: find.byType(EditableText),
+          ),
+          text,
+        );
+      }
+      await tester.pump();
       await tapLink('Continue');
       expect(find.byType(AcademicProfileScreen), findsOneWidget);
       expect(container.read(sessionProvider), SessionStatus.onboarding);
