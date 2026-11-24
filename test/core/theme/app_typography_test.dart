@@ -8,11 +8,18 @@ void main() {
   const jakarta = 'PlusJakartaSans';
   const inter = 'Inter';
 
-  // Values copied from design/notes/tokens.md (Figma text styles).
+  // Values copied from design/notes/tokens.md (Figma text styles), plus the
+  // two unnamed styles found on the screens in task 1.5.
   const specs = <String, Spec>{
     'Headings/H1': (family: jakarta, size: 48, lineHeight: 58, weight: 600),
     'Headings/H2': (family: jakarta, size: 40, lineHeight: 48, weight: 600),
     'Headings/H3': (family: jakarta, size: 32, lineHeight: 38, weight: 600),
+    'Headings/H3 ExtraBold': (
+      family: jakarta,
+      size: 32,
+      lineHeight: 38,
+      weight: 800,
+    ),
     'Headings/H5': (family: jakarta, size: 24, lineHeight: 28, weight: 600),
     'Subtitle/S1': (family: jakarta, size: 18, lineHeight: 28, weight: 600),
     'Subtitle/S2': (family: jakarta, size: 16, lineHeight: 24, weight: 600),
@@ -23,6 +30,12 @@ void main() {
     'Caption/C1': (family: jakarta, size: 12, lineHeight: 16, weight: 400),
     'Caption/C2': (family: jakarta, size: 12, lineHeight: 16, weight: 500),
     'Caption/C3': (family: jakarta, size: 10, lineHeight: 14, weight: 400),
+    'Caption/C3 Medium': (
+      family: jakarta,
+      size: 10,
+      lineHeight: 14,
+      weight: 500,
+    ),
     'Button/Giant': (family: jakarta, size: 18, lineHeight: 24, weight: 600),
     'Button/Large': (family: jakarta, size: 16, lineHeight: 20, weight: 600),
     'Button/Medium': (family: jakarta, size: 14, lineHeight: 16, weight: 600),
@@ -39,7 +52,7 @@ void main() {
 
   // Weights bundled in pubspec.yaml (task 0.7).
   const bundled = {
-    jakarta: {400, 500, 600, 700},
+    jakarta: {400, 500, 600, 700, 800},
     inter: {400, 500},
   };
 

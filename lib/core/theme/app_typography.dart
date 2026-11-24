@@ -8,7 +8,9 @@ import 'package:flutter/painting.dart';
 /// the Figma line height. Styles carry no colour: they inherit it from the
 /// surrounding `DefaultTextStyle` or take one with `copyWith(color: ...)`.
 ///
-/// Headings/H4 has not been seen in the file yet; it is added after task 1.5.
+/// Headings/H4 is not used anywhere in the file (checked in task 1.5).
+/// Two styles carry no Figma style but recur on screens: [c3Medium] and
+/// [h3ExtraBold].
 abstract final class AppTypography {
   /// Font family for every style except the `inter*` ones.
   static const jakarta = 'PlusJakartaSans';
@@ -44,6 +46,17 @@ abstract final class AppTypography {
     fontSize: 32,
     height: 38 / 32,
     fontWeight: FontWeight.w600,
+    letterSpacing: 0,
+    leadingDistribution: TextLeadingDistribution.even,
+  );
+
+  /// 32/38 ExtraBold, no Figma style: the onboarding headlines (frames 94
+  /// and 95).
+  static const h3ExtraBold = TextStyle(
+    fontFamily: jakarta,
+    fontSize: 32,
+    height: 38 / 32,
+    fontWeight: FontWeight.w800,
     letterSpacing: 0,
     leadingDistribution: TextLeadingDistribution.even,
   );
@@ -154,6 +167,17 @@ abstract final class AppTypography {
     leadingDistribution: TextLeadingDistribution.even,
   );
 
+  /// Caption/C3 with the Medium weight Figma applies as an override: progress
+  /// labels and the bottom-nav labels, 10/14 Medium.
+  static const c3Medium = TextStyle(
+    fontFamily: jakarta,
+    fontSize: 10,
+    height: 14 / 10,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0,
+    leadingDistribution: TextLeadingDistribution.even,
+  );
+
   // Buttons.
 
   /// Button/Giant: 18/24 SemiBold.
@@ -228,12 +252,14 @@ abstract final class AppTypography {
     leadingDistribution: TextLeadingDistribution.even,
   );
 
-  /// Every style by its Figma text-style name. Used by the token gallery and
-  /// the tests.
+  /// Every style by its Figma text-style name (the two styles without one are
+  /// named after their base style). Used by the token gallery and the
+  /// tests.
   static const Map<String, TextStyle> byFigmaName = {
     'Headings/H1': h1,
     'Headings/H2': h2,
     'Headings/H3': h3,
+    'Headings/H3 ExtraBold': h3ExtraBold,
     'Headings/H5': h5,
     'Subtitle/S1': s1,
     'Subtitle/S2': s2,
@@ -244,6 +270,7 @@ abstract final class AppTypography {
     'Caption/C1': c1,
     'Caption/C2': c2,
     'Caption/C3': c3,
+    'Caption/C3 Medium': c3Medium,
     'Button/Giant': buttonGiant,
     'Button/Large': buttonLarge,
     'Button/Medium': buttonMedium,

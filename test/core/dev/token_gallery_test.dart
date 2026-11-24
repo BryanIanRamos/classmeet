@@ -37,7 +37,7 @@ void main() {
       expect(find.text(role), findsOneWidget, reason: role);
     }
     for (final name in AppTypography.byFigmaName.keys) {
-      expect(find.textContaining(name), findsOneWidget, reason: name);
+      expect(find.textContaining('$name · '), findsOneWidget, reason: name);
     }
   });
 
