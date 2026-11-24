@@ -59,6 +59,13 @@ void main() {
     expect(prefsOf(c).schoolId, 'csu');
   });
 
+  test('subjectsProvider serves the six 97 chips', () async {
+    final c = await loaded();
+    final subjects = await c.read(subjectsProvider('csu-bsit').future);
+    expect(subjects.map((s) => s.name), contains('Computer Programming'));
+    expect(subjects, hasLength(6));
+  });
+
   test('subjects toggle on and off', () async {
     final c = await loaded();
     controllerOf(c)

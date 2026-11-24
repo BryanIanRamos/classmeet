@@ -30,6 +30,13 @@ final programsProvider = FutureProvider.family<List<Program>, String>(
       ref.watch(catalogRepositoryProvider).fetchPrograms(collegeId),
 );
 
+/// Subject chips for step 97: the chosen program's subjects (or a general
+/// list when no program is set).
+final subjectsProvider = FutureProvider.family<List<Subject>, String?>(
+  (ref, programId) =>
+      ref.watch(catalogRepositoryProvider).fetchSubjects(programId: programId),
+);
+
 class OnboardingController extends AsyncNotifier<OnboardingPrefs> {
   @override
   Future<OnboardingPrefs> build() =>
