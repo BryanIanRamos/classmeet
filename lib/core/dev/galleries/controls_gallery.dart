@@ -286,6 +286,16 @@ class AppDropdownMatrix extends StatelessWidget {
           ),
         ),
         _row(
+          'Confirmed (96)',
+          AppDropdown<int>(
+            label: 'Label',
+            items: _items,
+            value: 2,
+            confirmSelection: true,
+            onChanged: (_) {},
+          ),
+        ),
+        _row(
           'Accent',
           AppDropdown<int>(
             placeholder: 'Select',

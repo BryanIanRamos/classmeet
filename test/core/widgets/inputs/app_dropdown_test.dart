@@ -151,6 +151,55 @@ void main() {
     });
   });
 
+  group('confirmSelection (96 School)', () {
+    testWidgets('a selected value shows a grey-900 border and a check', (
+      tester,
+    ) async {
+      await pumpDropdown(
+        tester,
+        AppDropdown<int>(
+          items: items,
+          value: 1,
+          onChanged: (_) {},
+          accentColor: AppColors.plume500,
+          confirmSelection: true,
+        ),
+      );
+      expect(borderColor(tester), AppColors.grey900);
+      expect(find.byIcon(AppIcons.check), findsOneWidget);
+      expect(find.byIcon(AppIcons.chevronDown), findsNothing);
+    });
+
+    testWidgets('without a value it keeps the accent and the chevron', (
+      tester,
+    ) async {
+      await pumpDropdown(
+        tester,
+        AppDropdown<int>(
+          items: items,
+          value: null,
+          placeholder: 'Select College',
+          onChanged: (_) {},
+          accentColor: AppColors.plume500,
+          confirmSelection: true,
+        ),
+      );
+      expect(borderColor(tester), AppColors.plume500);
+      expect(find.byIcon(AppIcons.chevronDown), findsOneWidget);
+    });
+
+    testWidgets('off by default: a selected value keeps the chevron', (
+      tester,
+    ) async {
+      await pumpDropdown(
+        tester,
+        AppDropdown<int>(items: items, value: 1, onChanged: (_) {}),
+      );
+      expect(find.byIcon(AppIcons.chevronDown), findsOneWidget);
+      expect(borderColor(tester), isNot(AppColors.grey900));
+    });
+  });
+
   group('menu', () {
     testWidgets('opens on tap, shows the rows, selecting closes it', (
       tester,

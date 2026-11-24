@@ -217,6 +217,7 @@ class AppDropdown<T> extends StatefulWidget {
     this.size = AppTextFieldSize.large,
     this.leadingIcon,
     this.accentColor,
+    this.confirmSelection = false,
     this.statesController,
     this.initiallyOpen = false,
   });
@@ -252,6 +253,11 @@ class AppDropdown<T> extends StatefulWidget {
 
   /// Replaces the idle border, placeholder and icon colour.
   final Color? accentColor;
+
+  /// When true, a field with a selected value shows the "done" look of
+  /// screen 96 (School): a Grey-900 border and a check instead of the
+  /// chevron, until it is opened again.
+  final bool confirmSelection;
   final WidgetStatesController? statesController;
   final bool initiallyOpen;
 
@@ -356,7 +362,9 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
     final expanded = enabled && _open;
     final hasError = widget.errorText != null;
     final selected = _selected;
-    final accent = widget.accentColor;
+    final done =
+        widget.confirmSelection && selected != null && enabled && !hasError;
+    final accent = done ? null : widget.accentColor;
     final helper = widget.errorText ?? widget.helperText;
 
     final Color border;
@@ -366,6 +374,8 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
       border = AppColors.ember500;
     } else if (expanded || focused) {
       border = AppColors.sage500;
+    } else if (done) {
+      border = AppColors.grey900;
     } else if (accent != null) {
       border = accent;
     } else {
@@ -379,6 +389,8 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
       iconColor = AppColors.ember500;
     } else if (expanded || focused) {
       iconColor = AppColors.sage500;
+    } else if (done) {
+      iconColor = colors.iconBlack;
     } else {
       iconColor = accent ?? colors.iconGrey;
     }
@@ -424,14 +436,21 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              RotatedBox(
-                quarterTurns: expanded ? 2 : 0,
-                child: Icon(
-                  AppIcons.chevronDown,
+              if (done && !expanded)
+                Icon(
+                  AppIcons.check,
                   size: AppTextField.iconSize,
                   color: iconColor,
+                )
+              else
+                RotatedBox(
+                  quarterTurns: expanded ? 2 : 0,
+                  child: Icon(
+                    AppIcons.chevronDown,
+                    size: AppTextField.iconSize,
+                    color: iconColor,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
