@@ -5,6 +5,7 @@ import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 import '../widgets/buttons/app_button.dart';
 import 'galleries/inputs_gallery.dart';
+import 'galleries/selection_gallery.dart';
 
 /// Debug-only gallery of the design-system widgets (`/dev/widgets`). Task 2.14
 /// adds the other widgets and compares each section with the DS sheets.
@@ -30,6 +31,11 @@ class WidgetGallery extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: AppTextFieldMatrix(),
+          ),
+          SizedBox(height: AppSpacing.xl),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SelectionGallery(),
           ),
         ],
       ),
