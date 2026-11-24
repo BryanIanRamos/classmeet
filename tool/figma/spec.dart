@@ -172,7 +172,10 @@ String describeNode(Json node, {TokenNames tokens = TokenNames.none}) {
     final token = tokens.textStyles.isEmpty
         ? ''
         : ' (${tokens.textStyles[key] ?? 'off-scale'})';
-    parts.add('$key$token${_letterSpacing(style)}${_align(style)}');
+    parts.add(
+      '$key$token${_letterSpacing(style)}${_align(style)}'
+      '${_weightOverrides(node, style)}',
+    );
   } else if (type == 'INSTANCE') {
     parts.add('INSTANCE "$name" ${_size(node)}');
     final props = _componentProps(node);
@@ -392,3 +395,35 @@ String _n(num? v) {
 
 String _clip(String s, int max) =>
     s.length <= max ? s : '${s.substring(0, max)}…';
+
+/// Weight changes Figma applies to a text's characters on top of its text
+/// style (`characterStyleOverrides` + `styleOverrideTable`), e.g. the Home
+/// card titles: C2 Medium with every character overridden to Bold. Prints
+/// ` · **w700 override**` for the whole text, or names the overridden part.
+String _weightOverrides(Json node, Json style) {
+  final table = node['styleOverrideTable'] as Map<String, dynamic>?;
+  final perChar = (node['characterStyleOverrides'] as List?)?.cast<num>();
+  if (table == null || table.isEmpty || perChar == null || perChar.isEmpty) {
+    return '';
+  }
+  final text = node['characters'] as String? ?? '';
+  final base = style['fontWeight'];
+  final out = <String>[];
+  for (final MapEntry(:key, :value) in table.entries) {
+    final weight = (value as Json)['fontWeight'];
+    if (weight == null || weight == base) continue;
+    final id = num.parse(key);
+    final chars = [
+      for (var i = 0; i < text.length && i < perChar.length; i++)
+        if (perChar[i] == id) text[i],
+    ].join();
+    final whole =
+        perChar.length >= text.length && perChar.every((c) => c == id);
+    out.add(
+      whole
+          ? '**w$weight override**'
+          : '**w$weight override on "${_clip(chars.trim(), 40)}"**',
+    );
+  }
+  return out.isEmpty ? '' : ' · ${out.join(' · ')}';
+}
