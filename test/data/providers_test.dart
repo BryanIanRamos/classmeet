@@ -47,6 +47,33 @@ void main() {
     expect((await c.read(walletRepositoryProvider).fetchWallet()).talons, 23);
   });
 
+  test(
+    'study repositories serve week-1, and AI spends shared talons',
+    () async {
+      final c = containerWith(FakeConfig.instant);
+      expect(
+        await c.read(readerRepositoryProvider).fetchSections('week-1'),
+        isNotEmpty,
+      );
+      expect(
+        await c.read(materialRepositoryProvider).fetchRecent(),
+        isNotEmpty,
+      );
+      expect(
+        await c.read(downloadRepositoryProvider).fetchPacks(),
+        hasLength(3),
+      );
+
+      await c
+          .read(aiRepositoryProvider)
+          .explain(
+            materialId: 'week-1',
+            text: 'A computer follows the input–process–output cycle.',
+          );
+      expect((await c.read(walletRepositoryProvider).fetchWallet()).talons, 23);
+    },
+  );
+
   test('the empty and error scenarios reach the fakes', () async {
     final empty = containerWith(
       const FakeConfig(scenario: FakeScenario.empty, latency: Duration.zero),

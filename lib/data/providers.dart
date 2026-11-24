@@ -1,13 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/env.dart';
+import 'fakes/fake_ai_repository.dart';
 import 'fakes/fake_auth_repository.dart';
 import 'fakes/fake_catalog_repository.dart';
 import 'fakes/fake_class_repository.dart';
 import 'fakes/fake_config.dart';
+import 'fakes/fake_download_repository.dart';
+import 'fakes/fake_material_repository.dart';
 import 'fakes/fake_notification_repository.dart';
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_quest_repository.dart';
+import 'fakes/fake_reader_repository.dart';
 import 'fakes/fake_search_repository.dart';
 import 'fakes/fake_wallet_repository.dart';
 import 'repositories/ai_repository.dart';
@@ -65,18 +69,21 @@ final classRepositoryProvider = Provider<ClassRepository>(
   (ref) => FakeClassRepository(_fakeConfig(ref)),
 );
 
-// Study (fakes: task 3.8).
+// Study. The AI fake spends talons from the shared wallet.
 final materialRepositoryProvider = Provider<MaterialRepository>(
-  (ref) => _pending('MaterialRepository', '3.8'),
+  (ref) => FakeMaterialRepository(_fakeConfig(ref)),
 );
 final readerRepositoryProvider = Provider<ReaderRepository>(
-  (ref) => _pending('ReaderRepository', '3.8'),
+  (ref) => FakeReaderRepository(_fakeConfig(ref)),
 );
 final aiRepositoryProvider = Provider<AiRepository>(
-  (ref) => _pending('AiRepository', '3.8'),
+  (ref) => FakeAiRepository(
+    _fakeConfig(ref),
+    wallet: ref.watch(walletRepositoryProvider),
+  ),
 );
 final downloadRepositoryProvider = Provider<DownloadRepository>(
-  (ref) => _pending('DownloadRepository', '3.8'),
+  (ref) => FakeDownloadRepository(_fakeConfig(ref)),
 );
 
 // Play and create (fakes: task 3.9).
