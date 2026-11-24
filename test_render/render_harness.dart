@@ -23,16 +23,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
-/// Logical sizes rendered: the Figma frame (428 × 926) first, then the
+/// Logical sizes rendered: the Figma base frame (428 × 870) first, then the
 /// smallest supported phone (360 × 800).
-const renderSizes = [Size(428, 926), Size(360, 800)];
+const renderSizes = [Size(428, 870), Size(360, 800)];
 
 /// Pixel ratio of the renders; matches the 2x Figma references.
 const renderPixelRatio = 2.0;
 
-/// Safe-area insets standing in for the status bar and home indicator drawn
-/// in the Figma frames. Confirm both against the frame layers in task 1.4.
-const renderViewPadding = EdgeInsets.only(top: 44, bottom: 24);
+/// Safe-area insets standing in for the chrome drawn in the Figma frames: the
+/// 62-high iOS status bar and the 24-high home indicator (task 1.5).
+const renderViewPadding = EdgeInsets.only(top: 62, bottom: 24);
 
 const rendersDir = 'design/renders';
 const refDir = 'design/ref';
