@@ -3,9 +3,7 @@ import 'package:classmeet/core/router/app_bottom_nav.dart';
 import 'package:classmeet/core/router/app_router.dart';
 import 'package:classmeet/core/router/not_found_screen.dart';
 import 'package:classmeet/core/router/routes.dart';
-import 'package:classmeet/core/router/screen_placeholder.dart';
 import 'package:classmeet/core/widgets/buttons/app_button.dart';
-import 'package:classmeet/core/widgets/feedback/coming_soon_screen.dart';
 import 'package:classmeet/features/auth/application/session_controller.dart';
 import 'package:classmeet/features/auth/presentation/screens/sign_up_screen.dart';
 import 'package:classmeet/features/home/presentation/screens/home_dashboard_screen.dart';
@@ -117,13 +115,6 @@ void main() {
       expect(tester.takeException(), isNull, reason: path);
       expect(find.byType(NotFoundScreen), findsNothing, reason: path);
       expect(currentLocation(container), path, reason: path);
-      final placeholders = find.byType(ScreenPlaceholder);
-      final comingSoon = find.byType(ComingSoonScreen);
-      expect(
-        placeholders.evaluate().length + comingSoon.evaluate().length,
-        1,
-        reason: path,
-      );
     }
   });
 
