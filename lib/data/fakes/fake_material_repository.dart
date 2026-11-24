@@ -110,7 +110,7 @@ final class FakeMaterialRepository implements MaterialRepository {
       sourceNote: uploads.length > 1
           ? 'Merged from ${uploads.length} files'
           : null,
-      createdBy: 'Bryan Ramos',
+      createdBy: 'Bryan', // the signed-in user's username (D-19)
       createdAt: _clock(),
       sizeBytes: uploads.fold<int>(0, (sum, u) => sum + u.totalBytes),
     );

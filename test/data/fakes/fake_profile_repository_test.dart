@@ -14,7 +14,7 @@ void main() {
 
   test('fetchProfile returns the design student', () async {
     final p = await repo.fetchProfile();
-    expect(p.fullName, 'Bryan Ramos');
+    expect(p.username, 'Bryan');
     expect(p.nickname, 'Owl_4821');
     expect(p.programLabel, 'BSIT 2A');
     expect(p.schoolShort, 'CSU');

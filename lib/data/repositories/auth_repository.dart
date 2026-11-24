@@ -6,8 +6,10 @@ abstract interface class AuthRepository {
   /// The signed-in user, or null when signed out.
   Future<UserProfile?> currentUser();
 
+  /// Sign-up asks Username, Email and Password (D-19); there is no full
+  /// name.
   Future<UserProfile> signUp({
-    required String fullName,
+    required String username,
     required String email,
     required String password,
   });

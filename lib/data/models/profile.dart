@@ -4,7 +4,7 @@ import 'onboarding_prefs.dart';
 final class UserProfile {
   const UserProfile({
     required this.id,
-    required this.fullName,
+    required this.username,
     required this.email,
     required this.nickname,
     this.avatarAsset,
@@ -14,7 +14,11 @@ final class UserProfile {
   });
 
   final String id;
-  final String fullName;
+
+  /// Chosen at sign-up instead of a full name, and shown everywhere the
+  /// design shows the user's name: the Home greeting, comments and the
+  /// ranking "Display name" option (D-19).
+  final String username;
   final String email;
 
   /// Leaderboard nickname, e.g. "Owl_4821" (133).
@@ -30,7 +34,7 @@ final class UserProfile {
 
   UserProfile copyWith({
     String? id,
-    String? fullName,
+    String? username,
     String? email,
     String? nickname,
     String? avatarAsset,
@@ -40,7 +44,7 @@ final class UserProfile {
   }) {
     return UserProfile(
       id: id ?? this.id,
-      fullName: fullName ?? this.fullName,
+      username: username ?? this.username,
       email: email ?? this.email,
       nickname: nickname ?? this.nickname,
       avatarAsset: avatarAsset ?? this.avatarAsset,

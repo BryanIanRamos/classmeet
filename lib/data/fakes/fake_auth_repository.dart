@@ -18,16 +18,16 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<UserProfile> signUp({
-    required String fullName,
+    required String username,
     required String email,
     required String password,
   }) => _config.answer('signUp', () {
-    if (fullName.trim().isEmpty || email.trim().isEmpty || password.isEmpty) {
+    if (username.trim().isEmpty || email.trim().isEmpty || password.isEmpty) {
       throw const RepositoryException('Name, email and password are required');
     }
     // A new student has no program or school yet (onboarding sets them).
     return _user = sampleUser.copyWith(
-      fullName: fullName.trim(),
+      username: username.trim(),
       email: email.trim(),
       programLabel: '',
       schoolShort: '',

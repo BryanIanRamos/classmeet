@@ -6,7 +6,7 @@ void main() {
   group('UserProfile', () {
     const p = UserProfile(
       id: 'u1',
-      fullName: 'Bryan Ramos',
+      username: 'Bryan',
       email: 'b@x.com',
       nickname: 'Owl_4821',
       avatarAsset: 'a.png',
@@ -18,7 +18,7 @@ void main() {
     test('copyWith() keeps every field', () {
       final c = p.copyWith();
       expect(c.id, 'u1');
-      expect(c.fullName, 'Bryan Ramos');
+      expect(c.username, 'Bryan');
       expect(c.email, 'b@x.com');
       expect(c.nickname, 'Owl_4821');
       expect(c.avatarAsset, 'a.png');
@@ -30,7 +30,7 @@ void main() {
     test('copyWith changes only the given field', () {
       final c = p.copyWith(nickname: 'Hoot');
       expect(c.nickname, 'Hoot');
-      expect(c.fullName, 'Bryan Ramos');
+      expect(c.username, 'Bryan');
       expect(c.yearLevel, YearLevel.second);
     });
   });

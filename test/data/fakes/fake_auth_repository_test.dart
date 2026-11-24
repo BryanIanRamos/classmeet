@@ -16,7 +16,7 @@ void main() {
 
   test('logIn signs in with the sample student and persists', () async {
     final user = await repo.logIn(email: 'a@example.com', password: 'pw');
-    expect(user.fullName, 'Bryan Ramos');
+    expect(user.username, 'Bryan');
     expect(user.nickname, 'Owl_4821');
     expect(user.email, 'a@example.com');
     expect((await repo.currentUser())?.id, user.id);
@@ -32,17 +32,17 @@ void main() {
 
   test('signUp creates the user and persists', () async {
     final user = await repo.signUp(
-      fullName: 'Ana Cruz',
+      username: 'ana_cruz',
       email: 'ana@example.com',
       password: 'pw',
     );
-    expect(user.fullName, 'Ana Cruz');
+    expect(user.username, 'ana_cruz');
     expect((await repo.currentUser())?.email, 'ana@example.com');
   });
 
   test('signUp with missing fields fails', () {
     expect(
-      repo.signUp(fullName: '', email: 'a@example.com', password: 'pw'),
+      repo.signUp(username: '', email: 'a@example.com', password: 'pw'),
       throwsA(isA<RepositoryException>()),
     );
   });
@@ -73,7 +73,7 @@ void main() {
       throwsA(isA<RepositoryException>()),
     );
     expect(
-      r.signUp(fullName: 'A', email: 'a@example.com', password: 'p'),
+      r.signUp(username: 'A', email: 'a@example.com', password: 'p'),
       throwsA(isA<RepositoryException>()),
     );
     expect(r.logOut(), throwsA(isA<RepositoryException>()));

@@ -5,7 +5,7 @@ import '../../models/profile.dart';
 /// The signed-in student (frames 8, 93). Email is a placeholder, never real.
 const sampleUser = UserProfile(
   id: 'user-bryan',
-  fullName: 'Bryan Ramos',
+  username: 'Bryan',
   email: 'student@example.com',
   nickname: 'Owl_4821',
   programLabel: 'BSIT 2A',
