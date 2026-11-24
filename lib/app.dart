@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart';
 
 class ClassMeetApp extends ConsumerWidget {
   const ClassMeetApp({super.key});
@@ -11,7 +12,7 @@ class ClassMeetApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'ClassMeet',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true),
+      theme: AppTheme.light,
       routerConfig: ref.watch(routerProvider),
     );
   }
