@@ -206,6 +206,12 @@ void _spec(String? target) {
       : frames.where((f) => f.id == target).toList();
   if (selected.isEmpty) throw FigmaError(64, 'unknown frame "$target"');
 
+  final tokens = TokenNames.parse(
+    colorsSource: File('lib/core/theme/app_colors.dart').readAsStringSync(),
+    typographySource: File(
+      'lib/core/theme/app_typography.dart',
+    ).readAsStringSync(),
+  );
   var written = 0;
   for (final frame in selected) {
     final cache = File(nodesCachePath(frame.section));
@@ -219,12 +225,20 @@ void _spec(String? target) {
       stderr.writeln('skip    ${frame.id}: not in ${cache.path}');
       continue;
     }
+    final md = condenseFrame(
+      node,
+      title: '${frame.no} ${frame.slug}',
+      tokens: tokens,
+    );
     final out = File('$specsDir/${frame.fileStem}.md')
       ..parent.createSync(recursive: true)
-      ..writeAsStringSync(
-        condenseFrame(node, title: '${frame.no} ${frame.slug}'),
-      );
-    stdout.writeln('spec    ${out.path}');
+      ..writeAsStringSync(md);
+    // Budget: about 4 characters per token, at most ~6k tokens per spec.
+    final estimate = md.length ~/ 4;
+    stdout.writeln(
+      'spec    ${out.path}  ~${estimate}t'
+      '${estimate > 6000 ? '  WARN over the 6k budget' : ''}',
+    );
     written++;
   }
   stdout.writeln('$written spec(s) written.');

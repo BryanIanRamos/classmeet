@@ -153,6 +153,122 @@ void main() {
       expect(md, contains('VECTOR ×5 (illustration)'));
       expect(findNode(frame, '9:v3'), isNotNull);
     });
+
+    group('token names', () {
+      final tokens = TokenNames.parse(
+        colorsSource: '''
+  static const sage500 = Color(0xFF42807F);
+  static const black10 = Color(0x1A000000);
+  static const white = Color(0xFFFFFFFF);
+''',
+        typographySource: '''
+  static const b2 = TextStyle(
+    fontFamily: jakarta,
+    fontSize: 16,
+    height: 24 / 16,
+    fontWeight: FontWeight.w500,
+  );
+  static const interC1 = TextStyle(
+    fontFamily: inter,
+    fontSize: 12,
+    height: 16 / 12,
+    fontWeight: FontWeight.w400,
+  );
+''',
+      );
+
+      test('parse the palette and the type scale from the theme sources', () {
+        expect(tokens.colors, {
+          '#42807F': 'sage500',
+          '#0000001A': 'black10',
+          '#FFFFFF': 'white',
+        });
+        expect(tokens.textStyles, {
+          'Plus Jakarta Sans 16/24 w500': 'b2',
+          'Inter 12/16 w400': 'interC1',
+        });
+      });
+
+      test('annotate fills and text, and flag off-scale text', () {
+        Map<String, dynamic> text(num size, num line, int weight) => {
+          'type': 'TEXT',
+          'characters': 'Hi',
+          'style': {
+            'fontFamily': 'Plus Jakarta Sans',
+            'fontSize': size,
+            'lineHeightPx': line,
+            'fontWeight': weight,
+          },
+          'fills': [
+            {
+              'type': 'SOLID',
+              'color': {'r': 0x42 / 255, 'g': 0x80 / 255, 'b': 0x7F / 255},
+            },
+          ],
+        };
+        expect(
+          describeNode(text(16, 24, 500), tokens: tokens),
+          'TEXT "Hi" · Plus Jakarta Sans 16/24 w500 (b2) · '
+          'fill #42807F (sage500)',
+        );
+        expect(
+          describeNode(text(10, 14, 500), tokens: tokens),
+          contains('10/14 w500 (off-scale)'),
+        );
+      });
+    });
+
+    test('collapses illustration groups and the status bar', () {
+      final frame = {
+        'id': '7:1',
+        'name': 'Screen',
+        'type': 'FRAME',
+        'absoluteBoundingBox': {'width': 428, 'height': 870},
+        'children': [
+          {
+            'id': '7:2',
+            'name': 'Status bar - iPhone',
+            'type': 'FRAME',
+            'absoluteBoundingBox': {'width': 428, 'height': 62},
+            'children': [
+              {'id': '7:3', 'type': 'TEXT', 'characters': '9:41'},
+            ],
+          },
+          {
+            'id': '7:4',
+            'name': 'Owl',
+            'type': 'GROUP',
+            'absoluteBoundingBox': {'width': 100, 'height': 120},
+            'children': [
+              {'id': '7:5', 'type': 'VECTOR'},
+              {'id': '7:6', 'type': 'VECTOR'},
+              {
+                'id': '7:7',
+                'type': 'RECTANGLE',
+                'fills': [
+                  {'type': 'IMAGE'},
+                ],
+              },
+            ],
+          },
+          {
+            'id': '7:8',
+            'name': 'Card',
+            'type': 'GROUP',
+            'absoluteBoundingBox': {'width': 200, 'height': 80},
+            'children': [
+              {'id': '7:9', 'type': 'TEXT', 'characters': 'Keep me'},
+            ],
+          },
+        ],
+      };
+      final md = condenseFrame(frame);
+      expect(md, contains('- system "Status bar - iPhone" 428×62'));
+      expect(md, isNot(contains('9:41')));
+      expect(md, contains('- art "Owl" 100×120 · 2 vectors, 1 image'));
+      expect(md, contains('GROUP "Card"'));
+      expect(md, contains('TEXT "Keep me"'));
+    });
   });
 
   group('requests', () {

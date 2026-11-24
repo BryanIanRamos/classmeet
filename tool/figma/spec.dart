@@ -2,11 +2,68 @@
 /// a layout tree with size, auto-layout padding/gap, radius, fills, strokes,
 /// shadows, text styles, component instances and icons.
 ///
-/// First version (task 1.1); task 1.4 adds token mapping and the 6k-token
-/// budget checks.
+/// With [TokenNames] (parsed from the theme sources) fills, strokes and text
+/// styles carry their token names, e.g. `#94BDB8 (sage300)` and
+/// `16/24 w500 (b2)`; text off the type scale is marked `(off-scale)`.
+/// Illustration groups and the system status bar collapse to one line.
 library;
 
 typedef Json = Map<String, dynamic>;
+
+/// Maps design values to token names, parsed from
+/// `lib/core/theme/app_colors.dart` and `app_typography.dart` so the theme
+/// stays the single source.
+final class TokenNames {
+  const TokenNames({this.colors = const {}, this.textStyles = const {}});
+
+  factory TokenNames.parse({
+    required String colorsSource,
+    required String typographySource,
+  }) {
+    final colors = <String, String>{};
+    final colorDecl = RegExp(
+      r'static const (\w+) = Color\(0x([0-9A-Fa-f]{8})\);',
+    );
+    for (final m in colorDecl.allMatches(colorsSource)) {
+      final argb = m[2]!.toUpperCase();
+      final alpha = argb.substring(0, 2);
+      final hex = '#${argb.substring(2)}${alpha == 'FF' ? '' : alpha}';
+      colors.putIfAbsent(hex, () => m[1]!);
+    }
+
+    final textStyles = <String, String>{};
+    final styleDecl = RegExp(
+      r'static const (\w+) = TextStyle\(([^;]*?)\);',
+      dotAll: true,
+    );
+    for (final m in styleDecl.allMatches(typographySource)) {
+      final body = m[2]!;
+      final family = body.contains('fontFamily: inter')
+          ? 'Inter'
+          : 'Plus Jakarta Sans';
+      final size = RegExp(r'fontSize: ([\d.]+)').firstMatch(body)?[1];
+      final line = RegExp(r'height: ([\d.]+) /').firstMatch(body)?[1];
+      final weight = RegExp(r'FontWeight\.w(\d+)').firstMatch(body)?[1];
+      if (size == null || line == null || weight == null) continue;
+      textStyles.putIfAbsent('$family $size/$line w$weight', () => m[1]!);
+    }
+    return TokenNames(colors: colors, textStyles: textStyles);
+  }
+
+  /// No token names: plain values.
+  static const none = TokenNames();
+
+  /// `#RRGGBB[AA]` → `AppColors` name.
+  final Map<String, String> colors;
+
+  /// `Family size/lineHeight wWeight` → `AppTypography` name.
+  final Map<String, String> textStyles;
+
+  String color(String hex) => switch (colors[hex]) {
+    final name? => '$hex ($name)',
+    null => hex,
+  };
+}
 
 /// Finds the node with [id] anywhere below [root].
 Json? findNode(Json root, String id) {
@@ -30,7 +87,12 @@ Json? findInNodesResponse(Json response, String id) {
   return null;
 }
 
-String condenseFrame(Json frame, {String? title, int maxDepth = 12}) {
+String condenseFrame(
+  Json frame, {
+  String? title,
+  int maxDepth = 12,
+  TokenNames tokens = TokenNames.none,
+}) {
   final out = StringBuffer()
     ..writeln('# ${title ?? frame['name']}')
     ..writeln()
@@ -41,14 +103,32 @@ String condenseFrame(Json frame, {String? title, int maxDepth = 12}) {
     ..writeln()
     ..writeln('## Layout tree')
     ..writeln();
-  _writeNode(out, frame, 0, maxDepth);
+  _writeNode(out, frame, 0, maxDepth, tokens);
   return out.toString();
 }
 
-void _writeNode(StringBuffer out, Json node, int depth, int maxDepth) {
+void _writeNode(
+  StringBuffer out,
+  Json node,
+  int depth,
+  int maxDepth,
+  TokenNames tokens,
+) {
   if (node['visible'] == false) return;
   final indent = '  ' * depth;
-  out.writeln('$indent- ${describeNode(node)}');
+  final name = node['name'] as String? ?? '';
+  if (RegExp(
+    'status bar|home indicator',
+    caseSensitive: false,
+  ).hasMatch(name)) {
+    out.writeln('$indent- system "$name" ${_size(node)}');
+    return;
+  }
+  if (_isArt(node)) {
+    out.writeln('$indent- ${_describeArt(node)}');
+    return;
+  }
+  out.writeln('$indent- ${describeNode(node, tokens: tokens)}');
 
   final type = node['type'];
   // Icons and vector art: one line is enough.
@@ -63,20 +143,21 @@ void _writeNode(StringBuffer out, Json node, int depth, int maxDepth) {
   final vectors = children.where(_isPlainVector).length;
   for (final child in children) {
     if (vectors > 3 && _isPlainVector(child)) continue;
-    _writeNode(out, child, depth + 1, maxDepth);
+    _writeNode(out, child, depth + 1, maxDepth, tokens);
   }
   if (vectors > 3) out.writeln('$indent  - VECTOR ×$vectors (illustration)');
 }
 
 /// One line per node, e.g.
 /// `FRAME "Header" 428×56 · row pad 12/16 gap 10 · fill #FFFFFF · r16`.
-String describeNode(Json node) {
+String describeNode(Json node, {TokenNames tokens = TokenNames.none}) {
   final type = node['type'] as String? ?? '?';
   final name = node['name'] as String? ?? '';
   final parts = <String>[];
 
   if (_isIcon(node)) {
-    return 'icon `$name` ${_size(node)}${_fillsPart(node, prefix: ' · ')}';
+    return 'icon `$name` ${_size(node)}'
+        '${_fillsPart(node, tokens, prefix: ' · ')}';
   }
 
   if (type == 'TEXT') {
@@ -85,11 +166,13 @@ String describeNode(Json node) {
     final style = node['style'] as Json? ?? const {};
     final size = style['fontSize'] as num?;
     final line = style['lineHeightPx'] as num?;
-    parts.add(
-      '${style['fontFamily'] ?? '?'} '
-      '${_n(size)}/${_n(line)} w${style['fontWeight'] ?? '?'}'
-      '${_letterSpacing(style)}${_align(style)}',
-    );
+    final key =
+        '${style['fontFamily'] ?? '?'} '
+        '${_n(size)}/${_n(line)} w${style['fontWeight'] ?? '?'}';
+    final token = tokens.textStyles.isEmpty
+        ? ''
+        : ' (${tokens.textStyles[key] ?? 'off-scale'})';
+    parts.add('$key$token${_letterSpacing(style)}${_align(style)}');
   } else if (type == 'INSTANCE') {
     parts.add('INSTANCE "$name" ${_size(node)}');
     final props = _componentProps(node);
@@ -100,13 +183,13 @@ String describeNode(Json node) {
 
   final layout = _layout(node);
   if (layout.isNotEmpty) parts.add(layout);
-  final fills = _fillsPart(node);
+  final fills = _fillsPart(node, tokens);
   if (fills.isNotEmpty) parts.add(fills);
-  final stroke = _stroke(node);
+  final stroke = _stroke(node, tokens);
   if (stroke.isNotEmpty) parts.add(stroke);
   final radius = _radius(node);
   if (radius.isNotEmpty) parts.add(radius);
-  final effects = _effects(node);
+  final effects = _effects(node, tokens);
   if (effects.isNotEmpty) parts.add(effects);
   final opacity = node['opacity'] as num?;
   if (opacity != null && opacity < 1) parts.add('opacity ${_n(opacity)}');
@@ -118,6 +201,48 @@ List<Json> _children(Json node) =>
     (node['children'] as List<dynamic>? ?? const []).cast<Json>();
 
 bool _isIcon(Json node) => (node['name'] as String? ?? '').startsWith('li:');
+
+/// A group of pure illustration: no text, instance, icon or auto layout.
+bool _isArt(Json node) =>
+    const {'GROUP', 'BOOLEAN_OPERATION'}.contains(node['type']) &&
+    !_hasContent(node);
+
+bool _hasContent(Json node) {
+  for (final child in _children(node)) {
+    if (child['visible'] == false) continue;
+    final type = child['type'];
+    if (type == 'TEXT' || type == 'INSTANCE' || _isIcon(child)) return true;
+    if (child['layoutMode'] case final String mode when mode != 'NONE') {
+      return true;
+    }
+    if (_hasContent(child)) return true;
+  }
+  return false;
+}
+
+/// `art "Group 19" 640×706 · 37 vectors, 2 images`.
+String _describeArt(Json node) {
+  var vectors = 0;
+  var images = 0;
+  void count(Json n) {
+    if (n['visible'] == false) return;
+    final fills = (n['fills'] as List<dynamic>? ?? const []).cast<Json>();
+    if (fills.any((f) => f['type'] == 'IMAGE' && f['visible'] != false)) {
+      images++;
+    } else if (n['type'] != 'GROUP' && _children(n).isEmpty) {
+      vectors++;
+    }
+    _children(n).forEach(count);
+  }
+
+  count(node);
+  final what = [
+    if (vectors > 0) '$vectors vector${vectors == 1 ? '' : 's'}',
+    if (images > 0) '$images image${images == 1 ? '' : 's'}',
+  ];
+  return 'art "${node['name']}" ${_size(node)}'
+      '${what.isEmpty ? '' : ' · ${what.join(', ')}'}';
+}
 
 bool _isPlainVector(Json node) => const {
   'VECTOR',
@@ -152,40 +277,41 @@ String _layout(Json node) {
   return '$dir pad $pad gap $gap${align.isEmpty ? '' : ' ${align.join(' ')}'}';
 }
 
-String _fillsPart(Json node, {String prefix = ''}) {
-  final fills = _paints(node['fills']);
+String _fillsPart(Json node, TokenNames tokens, {String prefix = ''}) {
+  final fills = _paints(node['fills'], tokens);
   if (fills.isEmpty) return '';
   return '${prefix}fill ${fills.join(' + ')}';
 }
 
-String _stroke(Json node) {
-  final strokes = _paints(node['strokes']);
+String _stroke(Json node, TokenNames tokens) {
+  final strokes = _paints(node['strokes'], tokens);
   if (strokes.isEmpty) return '';
   return 'stroke ${_n(node['strokeWeight'] as num? ?? 1)} ${strokes.join(' + ')}';
 }
 
-List<String> _paints(Object? raw) {
+List<String> _paints(Object? raw, TokenNames tokens) {
   final paints = (raw as List<dynamic>? ?? const []).cast<Json>();
   return [
     for (final p in paints)
-      if (p['visible'] != false) _paint(p),
+      if (p['visible'] != false) _paint(p, tokens),
   ];
 }
 
-String _paint(Json paint) {
+String _paint(Json paint, TokenNames tokens) {
   final type = paint['type'] as String? ?? '?';
   final opacity = paint['opacity'] as num?;
   final alpha = opacity != null && opacity < 1 ? ' @${_n(opacity)}' : '';
   switch (type) {
     case 'SOLID':
-      return '${hexColor(paint['color'] as Json? ?? const {})}$alpha';
+      final hex = hexColor(paint['color'] as Json? ?? const {});
+      return '${tokens.color(hex)}$alpha';
     case 'IMAGE':
       return 'image$alpha';
     default:
       if (type.startsWith('GRADIENT')) {
         final stops = (paint['gradientStops'] as List<dynamic>? ?? const [])
             .cast<Json>()
-            .map((s) => hexColor(s['color'] as Json? ?? const {}))
+            .map((s) => tokens.color(hexColor(s['color'] as Json? ?? const {})))
             .join('→');
         return '${type.substring(9).toLowerCase()}-gradient($stops)$alpha';
       }
@@ -214,7 +340,7 @@ String _radius(Json node) {
   return r == null || r == 0 ? '' : 'r${_n(r)}';
 }
 
-String _effects(Json node) {
+String _effects(Json node, TokenNames tokens) {
   final effects = (node['effects'] as List<dynamic>? ?? const []).cast<Json>();
   final shown = [
     for (final e in effects)
@@ -226,7 +352,7 @@ String _effects(Json node) {
                 '${_n((e['offset'] as Json?)?['y'] as num? ?? 0)} '
                 'blur ${_n(e['radius'] as num? ?? 0)} '
                 'spread ${_n(e['spread'] as num? ?? 0)} '
-                '${hexColor(e['color'] as Json? ?? const {})}',
+                '${tokens.color(hexColor(e['color'] as Json? ?? const {}))}',
           'LAYER_BLUR' => 'blur ${_n(e['radius'] as num? ?? 0)}',
           'BACKGROUND_BLUR' => 'bg-blur ${_n(e['radius'] as num? ?? 0)}',
           _ => '${e['type']}'.toLowerCase(),
