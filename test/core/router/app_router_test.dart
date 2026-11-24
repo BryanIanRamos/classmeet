@@ -204,6 +204,7 @@ void main() {
     ) async {
       final container = await pumpApp(tester, status: SessionStatus.signedOut);
       Future<void> tapLink(String label) async {
+        await tester.ensureVisible(find.widgetWithText(AppButton, label).first);
         await tester.tap(find.widgetWithText(AppButton, label).first);
         await tester.pumpAndSettle();
       }
@@ -222,6 +223,13 @@ void main() {
 
       await goTo(tester, container, Routes.onboardingRoutine);
       expect(find.byType(StudyRoutineScreen), findsOneWidget);
+      // The real step 99 needs a goal, frequency, reminder and language.
+      for (final option in ['15 min', 'Weekdays', 'Morning', 'Taglish']) {
+        await tester.ensureVisible(find.text(option));
+        await tester.tap(find.text(option));
+        await tester.pumpAndSettle();
+      }
+      await tester.ensureVisible(find.widgetWithText(AppButton, 'Continue'));
       await tapLink('Continue');
       expect(container.read(sessionProvider), SessionStatus.ready);
       expect(find.byType(HomeDashboardScreen), findsOneWidget);
