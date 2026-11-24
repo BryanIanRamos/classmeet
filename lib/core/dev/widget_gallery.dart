@@ -5,6 +5,7 @@ import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 import '../widgets/buttons/app_button.dart';
 import 'galleries/display_gallery.dart';
+import 'galleries/feedback_gallery.dart';
 import 'galleries/inputs_gallery.dart';
 import 'galleries/navigation_gallery.dart';
 import 'galleries/selection_gallery.dart';
@@ -70,6 +71,26 @@ class WidgetGallery extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: AppProgressBarMatrix(),
+          ),
+          SizedBox(height: AppSpacing.xl),
+          Text('Alert', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: AppAlertMatrix(),
+          ),
+          SizedBox(height: AppSpacing.xl),
+          Text('Loader and tooltip', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          AppLoaderMatrix(),
+          SizedBox(height: AppSpacing.md),
+          AppTooltipMatrix(),
+          SizedBox(height: AppSpacing.xl),
+          Text('Empty and error states', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: FeedbackStatesMatrix(),
           ),
         ],
       ),
