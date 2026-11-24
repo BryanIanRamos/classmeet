@@ -19,6 +19,7 @@ import 'fakes/fake_quest_repository.dart';
 import 'fakes/fake_quiz_repository.dart';
 import 'fakes/fake_reader_repository.dart';
 import 'fakes/fake_search_repository.dart';
+import 'fakes/fake_study_plan_repository.dart';
 import 'fakes/fake_wallet_repository.dart';
 import 'repositories/ai_repository.dart';
 import 'repositories/attempt_repository.dart';
@@ -37,6 +38,7 @@ import 'repositories/quest_repository.dart';
 import 'repositories/quiz_repository.dart';
 import 'repositories/reader_repository.dart';
 import 'repositories/search_repository.dart';
+import 'repositories/study_plan_repository.dart';
 import 'repositories/wallet_repository.dart';
 
 /// The one place where screens meet data (D-02, D-18).
@@ -73,6 +75,9 @@ final searchRepositoryProvider = Provider<SearchRepository>(
 );
 final classRepositoryProvider = Provider<ClassRepository>(
   (ref) => FakeClassRepository(_fakeConfig(ref)),
+);
+final studyPlanRepositoryProvider = Provider<StudyPlanRepository>(
+  (ref) => FakeStudyPlanRepository(_fakeConfig(ref)),
 );
 
 // Study. The AI fake spends talons from the shared wallet.

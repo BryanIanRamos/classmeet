@@ -35,6 +35,11 @@ void main() {
       await c.read(searchRepositoryProvider).fetchRecentSearches(),
       isNotEmpty,
     );
+    expect(
+      (await c.read(studyPlanRepositoryProvider).fetchDailyProgress())
+          .remaining,
+      3,
+    );
   });
 
   test('one repository instance per container, so writes persist', () async {
