@@ -1,7 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/env.dart';
+import 'fakes/fake_auth_repository.dart';
+import 'fakes/fake_catalog_repository.dart';
+import 'fakes/fake_class_repository.dart';
 import 'fakes/fake_config.dart';
+import 'fakes/fake_notification_repository.dart';
+import 'fakes/fake_profile_repository.dart';
+import 'fakes/fake_quest_repository.dart';
+import 'fakes/fake_search_repository.dart';
+import 'fakes/fake_wallet_repository.dart';
 import 'repositories/ai_repository.dart';
 import 'repositories/attempt_repository.dart';
 import 'repositories/auth_repository.dart';
@@ -31,30 +39,30 @@ import 'repositories/wallet_repository.dart';
 /// the empty and error scenarios) or a single repository provider.
 final fakeConfigProvider = Provider<FakeConfig>((ref) => FakeConfig.fromEnv());
 
-// Home, profile and onboarding (fakes: task 3.7).
+// Home, profile and onboarding.
 final authRepositoryProvider = Provider<AuthRepository>(
-  (ref) => _pending('AuthRepository', '3.7'),
+  (ref) => FakeAuthRepository(_fakeConfig(ref)),
 );
 final profileRepositoryProvider = Provider<ProfileRepository>(
-  (ref) => _pending('ProfileRepository', '3.7'),
+  (ref) => FakeProfileRepository(_fakeConfig(ref)),
 );
 final catalogRepositoryProvider = Provider<CatalogRepository>(
-  (ref) => _pending('CatalogRepository', '3.7'),
+  (ref) => FakeCatalogRepository(_fakeConfig(ref)),
 );
 final walletRepositoryProvider = Provider<WalletRepository>(
-  (ref) => _pending('WalletRepository', '3.7'),
+  (ref) => FakeWalletRepository(_fakeConfig(ref)),
 );
 final questRepositoryProvider = Provider<QuestRepository>(
-  (ref) => _pending('QuestRepository', '3.7'),
+  (ref) => FakeQuestRepository(_fakeConfig(ref)),
 );
 final notificationRepositoryProvider = Provider<NotificationRepository>(
-  (ref) => _pending('NotificationRepository', '3.7'),
+  (ref) => FakeNotificationRepository(_fakeConfig(ref)),
 );
 final searchRepositoryProvider = Provider<SearchRepository>(
-  (ref) => _pending('SearchRepository', '3.7'),
+  (ref) => FakeSearchRepository(_fakeConfig(ref)),
 );
 final classRepositoryProvider = Provider<ClassRepository>(
-  (ref) => _pending('ClassRepository', '3.7'),
+  (ref) => FakeClassRepository(_fakeConfig(ref)),
 );
 
 // Study (fakes: task 3.8).
@@ -91,13 +99,24 @@ final createRepositoryProvider = Provider<CreateRepository>(
   (ref) => _pending('CreateRepository', '3.9'),
 );
 
-/// Placeholder body until a repository's fake exists. Also refuses
-/// `DATA_SOURCE=remote`: there is no backend yet (D-18).
-Never _pending(String repository, String task) {
+/// The fake config for a fake repository. Refuses `DATA_SOURCE=remote`:
+/// there is no backend yet (D-18).
+FakeConfig _fakeConfig(Ref ref) {
+  _requireFakeSource();
+  return ref.watch(fakeConfigProvider);
+}
+
+void _requireFakeSource() {
   if (Env.dataSource != 'fake') {
     throw UnsupportedError(
       'DATA_SOURCE=${Env.dataSource}: no backend yet (D-18, Phase 11)',
     );
   }
+}
+
+/// Placeholder body until a repository's fake exists. Also refuses
+/// `DATA_SOURCE=remote`: there is no backend yet (D-18).
+Never _pending(String repository, String task) {
+  _requireFakeSource();
   throw UnimplementedError('The fake $repository arrives in task $task');
 }
