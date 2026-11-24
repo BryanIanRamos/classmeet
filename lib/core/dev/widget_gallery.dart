@@ -7,6 +7,7 @@ import '../widgets/buttons/app_button.dart';
 import 'galleries/controls_gallery.dart';
 import 'galleries/display_gallery.dart';
 import 'galleries/feedback_gallery.dart';
+import 'galleries/illustration_gallery.dart';
 import 'galleries/inputs_gallery.dart';
 import 'galleries/lists_gallery.dart';
 import 'galleries/navigation_gallery.dart';
@@ -118,6 +119,13 @@ class WidgetGallery extends StatelessWidget {
           Text('Stepper', style: AppTypography.h5),
           SizedBox(height: AppSpacing.sm),
           AppStepperMatrix(),
+          SizedBox(height: AppSpacing.xl),
+          Text('Illustration', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(width: 760, child: IllustrationMatrix()),
+          ),
         ],
       ),
     );
