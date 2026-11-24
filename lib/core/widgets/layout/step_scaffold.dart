@@ -148,7 +148,30 @@ class StepScaffold extends StatelessWidget {
                     ),
                   )
                 else ...[
-                  Expanded(child: _scroll(colors, bottomPadding: 0)),
+                  Expanded(
+                    // Content that runs under the CTA area fades out over
+                    // the last fadeHeight instead of being cut off (99 at
+                    // 360); the screen background shows through.
+                    child: ShaderMask(
+                      key: const ValueKey('step-inline-fade'),
+                      blendMode: BlendMode.dstIn,
+                      shaderCallback: (bounds) => LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: const [Colors.white, Colors.transparent],
+                        stops: [
+                          1 -
+                              fadeHeight /
+                                  bounds.height.clamp(
+                                    fadeHeight,
+                                    double.infinity,
+                                  ),
+                          1,
+                        ],
+                      ).createShader(bounds),
+                      child: _scroll(colors, bottomPadding: fadeHeight),
+                    ),
+                  ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(
                       contentInset + blockInset,

@@ -371,10 +371,21 @@ void main() {
           final cta = tester.getRect(
             find.byKey(const ValueKey('step-primary')),
           );
+          expect(
+            find.byKey(const ValueKey('step-inline-fade')),
+            findsOneWidget,
+          );
           await tester.drag(find.text('item 0'), const Offset(0, -3000));
           await tester.pump();
           expect(tester.takeException(), isNull);
+          // The last item scrolls clear of the fade above the CTA area.
           final last = tester.getRect(find.text('item 19'));
+          final fadeTop =
+              tester
+                  .getRect(find.byKey(const ValueKey('step-inline-fade')))
+                  .bottom -
+              StepScaffold.fadeHeight;
+          expect(last.bottom, lessThanOrEqualTo(fadeTop));
           expect(last.bottom, lessThanOrEqualTo(cta.top));
           expect(
             tester.getRect(find.byKey(const ValueKey('step-primary'))),
