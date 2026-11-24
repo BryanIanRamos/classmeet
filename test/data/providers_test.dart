@@ -1,4 +1,7 @@
 import 'package:classmeet/data/fakes/fake_config.dart';
+import 'package:classmeet/data/models/attempt.dart';
+import 'package:classmeet/data/models/create.dart';
+import 'package:classmeet/data/models/quiz.dart';
 import 'package:classmeet/data/providers.dart';
 import 'package:classmeet/data/repositories/repository_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,6 +76,48 @@ void main() {
       expect((await c.read(walletRepositoryProvider).fetchWallet()).talons, 23);
     },
   );
+
+  test('play and create share the quiz, mistake and wallet fakes', () async {
+    final c = containerWith(FakeConfig.instant);
+    final quizzes = c.read(quizRepositoryProvider);
+    final before = (await quizzes.fetchQuizzes()).length;
+    final mistakesBefore =
+        (await c.read(mistakeRepositoryProvider).fetchSummary()).total;
+
+    // Generating a quiz spends 2 talons and adds it to "My quizzes".
+    final jobs = await c
+        .read(createRepositoryProvider)
+        .generateQuiz(const QuizSetup(title: 'My quiz'))
+        .toList();
+    expect(jobs.last.stage, GenerationStage.done);
+    expect(await quizzes.fetchQuizzes(), hasLength(before + 1));
+    expect((await c.read(walletRepositoryProvider).fetchWallet()).talons, 22);
+
+    // A wrong answer in a new attempt lands in the mistake bank.
+    final attempts = c.read(attemptRepositoryProvider);
+    final attempt = await attempts.startAttempt(
+      quizId: 'intro-computing',
+      mode: GameMode.standard,
+      settings: const GameSettings(),
+    );
+    final question = (await quizzes.fetchQuestions('intro-computing')).last;
+    await attempts.recordAnswer(
+      attempt.id,
+      AnswerRecord(
+        questionId: question.id,
+        chosenIndex: (question.correctIndex + 1) % question.options.length,
+        isCorrect: false,
+      ),
+    );
+    final summary = await c.read(mistakeRepositoryProvider).fetchSummary();
+    expect(summary.total, greaterThanOrEqualTo(mistakesBefore));
+    expect(
+      (await c.read(mistakeRepositoryProvider).fetchMistakes()).any(
+        (m) => m.questionId == question.id,
+      ),
+      isTrue,
+    );
+  });
 
   test('the empty and error scenarios reach the fakes', () async {
     final empty = containerWith(

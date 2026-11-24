@@ -2,15 +2,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/env.dart';
 import 'fakes/fake_ai_repository.dart';
+import 'fakes/fake_attempt_repository.dart';
 import 'fakes/fake_auth_repository.dart';
 import 'fakes/fake_catalog_repository.dart';
 import 'fakes/fake_class_repository.dart';
+import 'fakes/fake_comment_repository.dart';
 import 'fakes/fake_config.dart';
+import 'fakes/fake_create_repository.dart';
 import 'fakes/fake_download_repository.dart';
+import 'fakes/fake_leaderboard_repository.dart';
 import 'fakes/fake_material_repository.dart';
+import 'fakes/fake_mistake_repository.dart';
 import 'fakes/fake_notification_repository.dart';
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_quest_repository.dart';
+import 'fakes/fake_quiz_repository.dart';
 import 'fakes/fake_reader_repository.dart';
 import 'fakes/fake_search_repository.dart';
 import 'fakes/fake_wallet_repository.dart';
@@ -86,24 +92,40 @@ final downloadRepositoryProvider = Provider<DownloadRepository>(
   (ref) => FakeDownloadRepository(_fakeConfig(ref)),
 );
 
-// Play and create (fakes: task 3.9).
+// Play and create. Attempts and quiz generation write into the shared quiz
+// and mistake fakes (and the wallet), so the Play screens see the results.
+final _fakeQuizzes = Provider<FakeQuizRepository>(
+  (ref) => FakeQuizRepository(_fakeConfig(ref)),
+);
+final _fakeMistakes = Provider<FakeMistakeRepository>(
+  (ref) => FakeMistakeRepository(_fakeConfig(ref)),
+);
 final quizRepositoryProvider = Provider<QuizRepository>(
-  (ref) => _pending('QuizRepository', '3.9'),
+  (ref) => ref.watch(_fakeQuizzes),
 );
 final attemptRepositoryProvider = Provider<AttemptRepository>(
-  (ref) => _pending('AttemptRepository', '3.9'),
+  (ref) => FakeAttemptRepository(
+    _fakeConfig(ref),
+    quizzes: ref.watch(_fakeQuizzes),
+    mistakes: ref.watch(_fakeMistakes),
+    wallet: ref.watch(walletRepositoryProvider),
+  ),
 );
 final commentRepositoryProvider = Provider<CommentRepository>(
-  (ref) => _pending('CommentRepository', '3.9'),
+  (ref) => FakeCommentRepository(_fakeConfig(ref)),
 );
 final leaderboardRepositoryProvider = Provider<LeaderboardRepository>(
-  (ref) => _pending('LeaderboardRepository', '3.9'),
+  (ref) => FakeLeaderboardRepository(_fakeConfig(ref)),
 );
 final mistakeRepositoryProvider = Provider<MistakeRepository>(
-  (ref) => _pending('MistakeRepository', '3.9'),
+  (ref) => ref.watch(_fakeMistakes),
 );
 final createRepositoryProvider = Provider<CreateRepository>(
-  (ref) => _pending('CreateRepository', '3.9'),
+  (ref) => FakeCreateRepository(
+    _fakeConfig(ref),
+    quizzes: ref.watch(_fakeQuizzes),
+    wallet: ref.watch(walletRepositoryProvider),
+  ),
 );
 
 /// The fake config for a fake repository. Refuses `DATA_SOURCE=remote`:
@@ -119,11 +141,4 @@ void _requireFakeSource() {
       'DATA_SOURCE=${Env.dataSource}: no backend yet (D-18, Phase 11)',
     );
   }
-}
-
-/// Placeholder body until a repository's fake exists. Also refuses
-/// `DATA_SOURCE=remote`: there is no backend yet (D-18).
-Never _pending(String repository, String task) {
-  _requireFakeSource();
-  throw UnimplementedError('The fake $repository arrives in task $task');
 }
