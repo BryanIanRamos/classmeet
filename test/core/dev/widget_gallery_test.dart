@@ -18,7 +18,7 @@ void main() {
   });
 
   testWidgets('the matrix shows every style, state and size', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1400, 1600));
+    await tester.binding.setSurfaceSize(const Size(1400, 2000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
@@ -31,7 +31,8 @@ void main() {
         AppButtonStyle.values.length *
         AppButtonMatrix.states.length *
         AppButtonSize.values.length;
-    expect(find.byType(AppButton), findsNWidgets(cells * 2));
+    final tones = AppButtonTone.values.length * AppButtonStyle.values.length;
+    expect(find.byType(AppButton), findsNWidgets(cells * 2 + tones));
     final disabled = tester
         .widgetList<TextButton>(find.byType(TextButton))
         .where((b) => !b.enabled);

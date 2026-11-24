@@ -309,4 +309,61 @@ void main() {
       expect(paragraph.didExceedMaxLines, isTrue, reason: 'ellipsized');
     });
   });
+  group('tones', () {
+    ButtonStyle styleOf(AppButtonStyle style, AppButtonTone tone) => AppButton(
+      label: 'Tone',
+      onPressed: () {},
+      style: style,
+      tone: tone,
+    ).buttonStyle(colors);
+
+    test('filled uses the tone ramp; label stays white', () {
+      for (final tone in AppButtonTone.values) {
+        final style = styleOf(AppButtonStyle.filled, tone);
+        expect(style.backgroundColor!.resolve({}), tone.base, reason: '$tone');
+        expect(
+          style.backgroundColor!.resolve({WidgetState.pressed}),
+          tone.pressed,
+          reason: '$tone',
+        );
+        expect(style.foregroundColor!.resolve({}), AppColors.white);
+        expect(
+          style.side!.resolve({WidgetState.focused})!.color,
+          tone.focusRing,
+        );
+      }
+    });
+
+    test('outline uses the tone for border and label (95: Plume-500)', () {
+      final style = styleOf(AppButtonStyle.outline, AppButtonTone.plume);
+      expect(style.side!.resolve({})!.color, AppColors.plume500);
+      expect(style.foregroundColor!.resolve({}), AppColors.plume500);
+      expect(
+        style.backgroundColor!.resolve({WidgetState.pressed}),
+        AppColors.plume100,
+      );
+    });
+
+    test('sage stays the default', () {
+      final style = AppButton(
+        label: 'Default',
+        onPressed: () {},
+      ).buttonStyle(colors);
+      expect(style.backgroundColor!.resolve({}), AppColors.sage500);
+    });
+
+    test('disabled looks the same in every tone', () {
+      for (final tone in AppButtonTone.values) {
+        final style = AppButton(
+          label: 'Off',
+          onPressed: null,
+          tone: tone,
+        ).buttonStyle(colors);
+        expect(
+          style.backgroundColor!.resolve({WidgetState.disabled}),
+          AppColors.grey200,
+        );
+      }
+    });
+  });
 }

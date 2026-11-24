@@ -238,6 +238,28 @@ class AppButtonMatrix extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
         ],
+        const Text('tones', style: AppTypography.s2),
+        for (final tone in AppButtonTone.values)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.sm),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: _labelWidth,
+                  child: Text(tone.name, style: AppTypography.b3),
+                ),
+                for (final style in AppButtonStyle.values) ...[
+                  AppButton(
+                    label: style.name,
+                    onPressed: _noop,
+                    style: style,
+                    tone: tone,
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                ],
+              ],
+            ),
+          ),
       ],
     );
   }

@@ -60,6 +60,69 @@ enum AppButtonSize {
 /// Figma "Style" axis of the Design System Button.
 enum AppButtonStyle { filled, outline, clear }
 
+/// Colour family of a button. Sage is the default (Home 8); screens also use
+/// Plume (95 "Continue with Carsu", 92, 119, 122), Talon (13.1 "Join") and
+/// Sky (14). Each tone applies the DS state pattern with its own ramp. The
+/// palette has no Plume-700/900, so a Plume button keeps Plume-500 when
+/// hovered or pressed (INC-12).
+enum AppButtonTone {
+  sage(
+    AppColors.sage500,
+    AppColors.sage700,
+    AppColors.sage900,
+    AppColors.sage300,
+    AppColors.sage50,
+    AppColors.sage100,
+  ),
+  plume(
+    AppColors.plume500,
+    AppColors.plume500,
+    AppColors.plume500,
+    AppColors.plume300,
+    AppColors.plume50,
+    AppColors.plume100,
+  ),
+  talon(
+    AppColors.talon500,
+    AppColors.talon700,
+    AppColors.talon900,
+    AppColors.talon300,
+    AppColors.talon50,
+    AppColors.talon100,
+  ),
+  sky(
+    AppColors.sky500,
+    AppColors.sky700,
+    AppColors.sky900,
+    AppColors.sky300,
+    AppColors.sky50,
+    AppColors.sky100,
+  );
+
+  const AppButtonTone(
+    this.base,
+    this.hovered,
+    this.pressed,
+    this.focusRing,
+    this.tint,
+    this.pressedTint,
+  );
+
+  /// Filled background, outline border, and outline/clear label.
+  final Color base;
+
+  /// Filled background when hovered / pressed.
+  final Color hovered;
+  final Color pressed;
+
+  /// Focus ring.
+  final Color focusRing;
+
+  /// Outline/clear background when hovered / pressed.
+  final Color tint;
+  final Color pressedTint;
+}
+
 /// The ClassMeet button: [AppButtonSize] × [AppButtonStyle], with a label and
 /// optional leading and trailing icons, or icon-only with [AppButton.icon].
 ///
@@ -81,6 +144,7 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.size = AppButtonSize.large,
     this.style = AppButtonStyle.filled,
+    this.tone = AppButtonTone.sage,
     this.leadingIcon,
     this.trailingIcon,
     this.expand = false,
@@ -96,6 +160,7 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.size = AppButtonSize.large,
     this.style = AppButtonStyle.filled,
+    this.tone = AppButtonTone.sage,
     this.statesController,
   }) : label = null,
        leadingIcon = null,
@@ -124,6 +189,8 @@ class AppButton extends StatelessWidget {
   final bool expand;
 
   final WidgetStatesController? statesController;
+
+  final AppButtonTone tone;
 
   bool get _iconOnly => icon != null;
 
@@ -180,21 +247,20 @@ class AppButton extends StatelessWidget {
     final hovered = states.contains(WidgetState.hovered);
     return switch (style) {
       AppButtonStyle.filled when disabled => AppColors.grey200,
-      AppButtonStyle.filled when pressed => AppColors.sage900,
-      AppButtonStyle.filled when hovered => AppColors.sage700,
-      AppButtonStyle.filled => AppColors.sage500,
+      AppButtonStyle.filled when pressed => tone.pressed,
+      AppButtonStyle.filled when hovered => tone.hovered,
+      AppButtonStyle.filled => tone.base,
       _ when disabled => Colors.transparent,
-      _ when pressed => AppColors.sage100,
-      _ when hovered => AppColors.sage50,
+      _ when pressed => tone.pressedTint,
+      _ when hovered => tone.tint,
       _ => Colors.transparent,
     };
   }
 
   Color _foreground(Set<WidgetState> states, AppSemanticColors colors) {
     if (states.contains(WidgetState.disabled)) return colors.textGrey;
-    return style == AppButtonStyle.filled
-        ? colors.textPrimaryWhite
-        : colors.textSecondaryAccent;
+    if (style == AppButtonStyle.filled) return colors.textPrimaryWhite;
+    return tone == AppButtonTone.sage ? colors.textSecondaryAccent : tone.base;
   }
 
   BorderSide _side(Set<WidgetState> states) {
@@ -208,13 +274,10 @@ class AppButton extends StatelessWidget {
           : BorderSide.none;
     }
     if (states.contains(WidgetState.focused)) {
-      return const BorderSide(
-        color: AppColors.sage300,
-        width: focusBorderWidth,
-      );
+      return BorderSide(color: tone.focusRing, width: focusBorderWidth);
     }
     return outline
-        ? const BorderSide(color: AppColors.sage500, width: outlineBorderWidth)
+        ? BorderSide(color: tone.base, width: outlineBorderWidth)
         : BorderSide.none;
   }
 
