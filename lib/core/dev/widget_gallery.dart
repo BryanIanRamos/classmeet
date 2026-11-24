@@ -6,6 +6,7 @@ import '../theme/app_typography.dart';
 import '../widgets/buttons/app_button.dart';
 import 'galleries/display_gallery.dart';
 import 'galleries/inputs_gallery.dart';
+import 'galleries/navigation_gallery.dart';
 import 'galleries/selection_gallery.dart';
 
 /// Debug-only gallery of the design-system widgets (`/dev/widgets`). Task 2.14
@@ -58,6 +59,17 @@ class WidgetGallery extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: AppChipMatrix(),
+          ),
+          SizedBox(height: AppSpacing.xl),
+          Text('Navbar top', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          AppNavbarTopMatrix(),
+          SizedBox(height: AppSpacing.xl),
+          Text('Progress bar', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: AppProgressBarMatrix(),
           ),
         ],
       ),
