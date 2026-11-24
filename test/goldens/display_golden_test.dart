@@ -55,7 +55,7 @@ void main() {
     await golden(
       tester,
       const AppChipMatrix(),
-      const Size(500, 520),
+      const Size(500, 760),
       'display_chip.png',
     );
   });

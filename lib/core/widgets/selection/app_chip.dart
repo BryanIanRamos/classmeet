@@ -42,6 +42,17 @@ enum AppChipStyle {
     padding: AppSpacing.sm,
     radius: AppRadii.md,
     textStyle: AppTypography.b2,
+  ),
+
+  /// 36 high pill, white with a Grey-200 outline and Grey-500 text when off:
+  /// the choice chips of the onboarding steps (96 year level, 97 subjects,
+  /// 99 routine), quiz setup (115), Explain (91) and Listen (89). Selected
+  /// it fills Sage-500 like the others.
+  neutral(
+    height: 36,
+    padding: AppSpacing.md,
+    radius: AppRadii.xxl,
+    textStyle: AppTypography.b3,
   );
 
   const AppChipStyle({
@@ -266,22 +277,26 @@ class AppChip extends StatelessWidget {
       AppChipStyle.tonal when pressed => AppColors.grey300,
       AppChipStyle.tonal when hovered => AppColors.grey200,
       AppChipStyle.tonal => AppColors.grey100,
+      AppChipStyle.neutral when pressed => AppColors.grey100,
+      AppChipStyle.neutral when hovered => AppColors.grey50,
+      AppChipStyle.neutral => AppColors.white,
     };
   }
 
   Color _foreground(Set<WidgetState> states, AppSemanticColors colors) {
     if (!enabled) return colors.textGrey;
     if (selected) return colors.textPrimaryWhite;
-    return style == AppChipStyle.outline
-        ? colors.textSecondaryAccent
-        : colors.textSecondary;
+    return switch (style) {
+      AppChipStyle.outline => colors.textSecondaryAccent,
+      AppChipStyle.tonal || AppChipStyle.neutral => colors.textSecondary,
+    };
   }
 
   BorderSide _side(Set<WidgetState> states) {
     if (!enabled) {
-      return style == AppChipStyle.outline
-          ? const BorderSide(color: AppColors.grey200, width: borderWidth)
-          : BorderSide.none;
+      return style == AppChipStyle.tonal
+          ? BorderSide.none
+          : const BorderSide(color: AppColors.grey200, width: borderWidth);
     }
     if (states.contains(WidgetState.focused)) {
       return const BorderSide(
@@ -289,13 +304,17 @@ class AppChip extends StatelessWidget {
         width: focusBorderWidth,
       );
     }
-    if (style == AppChipStyle.outline) {
-      return BorderSide(
+    return switch (style) {
+      AppChipStyle.outline => BorderSide(
         color: selected ? selectedColor : AppColors.sage500,
         width: borderWidth,
-      );
-    }
-    return BorderSide.none;
+      ),
+      AppChipStyle.neutral => BorderSide(
+        color: selected ? selectedColor : AppColors.grey200,
+        width: borderWidth,
+      ),
+      AppChipStyle.tonal => BorderSide.none,
+    };
   }
 
   Widget _content() {

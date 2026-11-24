@@ -34,7 +34,11 @@ void main() {
           for (final s in AppChipStyle.values)
             s.name: (s.height, s.padding, s.radius),
         },
-        {'outline': (36, 16, 32), 'tonal': (32, 12, 16)},
+        {
+          'outline': (36, 16, 32),
+          'tonal': (32, 12, 16),
+          'neutral': (36, 16, 32),
+        },
       );
     });
 
@@ -174,6 +178,32 @@ void main() {
       onSelected: disabled ? null : (_) {},
       style: s,
     ).buttonStyle(colors);
+
+    test('neutral (96, 97, 99): grey outline off, sage fill on', () {
+      final off = styleOf(AppChipStyle.neutral, selected: false);
+      expect(off.backgroundColor!.resolve({}), AppColors.white);
+      expect(off.foregroundColor!.resolve({}), AppColors.grey500);
+      expect(
+        off.side!.resolve({}),
+        const BorderSide(color: AppColors.grey200, width: 1.5),
+      );
+      expect(
+        off.backgroundColor!.resolve({WidgetState.pressed}),
+        AppColors.grey100,
+      );
+
+      final on = styleOf(AppChipStyle.neutral, selected: true);
+      expect(on.backgroundColor!.resolve({}), AppColors.sage500);
+      expect(on.foregroundColor!.resolve({}), Colors.white);
+      expect(on.side!.resolve({})!.color, AppColors.sage500);
+
+      final dis = styleOf(
+        AppChipStyle.neutral,
+        selected: false,
+        disabled: true,
+      );
+      expect(dis.side!.resolve({})!.color, AppColors.grey200);
+    });
 
     test('outline: selected, unselected and disabled', () {
       final on = styleOf(AppChipStyle.outline, selected: true);
