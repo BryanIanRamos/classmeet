@@ -14,6 +14,7 @@ void main() {
       500: 'assets/fonts/PlusJakartaSans-Medium.ttf',
       600: 'assets/fonts/PlusJakartaSans-SemiBold.ttf',
       700: 'assets/fonts/PlusJakartaSans-Bold.ttf',
+      800: 'assets/fonts/PlusJakartaSans-ExtraBold.ttf',
     },
     'Inter': {
       400: 'assets/fonts/Inter-Regular.ttf',
