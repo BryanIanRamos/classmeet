@@ -74,8 +74,9 @@ class StepScaffold extends StatelessWidget {
   /// Fade height above the CTA area.
   static const fadeHeight = AppSpacing.xl;
 
-  /// Space under the CTA, above the safe-area inset.
-  static const bottomSpacer = AppSpacing.xl + AppSpacing.xs;
+  /// Space under the CTA, above the safe-area inset: 96 and 98 both end
+  /// the button 80 above the frame edge (12 + 44 + a 24 inset).
+  static const bottomSpacer = AppSpacing.xl + AppSpacing.lg;
 
   /// Gap between the CTA and the [secondary] widget.
   static const secondaryGap = AppSpacing.xs;
@@ -103,10 +104,6 @@ class StepScaffold extends StatelessWidget {
   final Widget? background;
 
   final StepCtaLayout ctaLayout;
-
-  /// Extra space under an inline CTA (96: 80 below the button in all,
-  /// 12 more than the sticky layout).
-  static const inlineExtraBottom = AppSpacing.sm;
 
   @override
   Widget build(BuildContext context) {
@@ -157,10 +154,7 @@ class StepScaffold extends StatelessWidget {
                       contentInset + blockInset,
                       ctaPadding,
                       contentInset + blockInset,
-                      ctaPadding +
-                          bottomSpacer +
-                          inlineExtraBottom +
-                          bottomInset,
+                      ctaPadding + bottomSpacer + bottomInset,
                     ),
                     child: _actions(),
                   ),

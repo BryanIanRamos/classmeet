@@ -441,6 +441,46 @@ void main() {
   });
 
   group('SelectableCard', () {
+    testWidgets('indicator colours can follow the screen (98: Plume)', (
+      tester,
+    ) async {
+      BoxDecoration indicator() =>
+          tester
+                  .widget<Container>(
+                    find.byKey(const ValueKey('card-indicator')),
+                  )
+                  .decoration!
+              as BoxDecoration;
+
+      await pump(
+        tester,
+        SelectableCard(
+          title: 'Practice quizzes',
+          selected: false,
+          onTap: () {},
+          indicatorColor: AppColors.plume500,
+          indicatorFill: AppColors.plume50,
+        ),
+      );
+      expect((indicator().border! as Border).top.color, AppColors.plume500);
+
+      await pump(
+        tester,
+        SelectableCard(
+          title: 'Flashcards',
+          selected: true,
+          onTap: () {},
+          indicatorColor: AppColors.plume500,
+          indicatorFill: AppColors.plume50,
+        ),
+      );
+      expect(indicator().color, AppColors.plume50);
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.check)).color,
+        AppColors.plume500,
+      );
+    });
+
     testWidgets('selected is Sage-500 with white text and a check', (
       tester,
     ) async {

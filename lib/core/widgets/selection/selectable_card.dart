@@ -13,7 +13,8 @@ import 'selection_support.dart';
 enum SelectableCardIndicator { checkbox, radio }
 
 /// A tappable tile with a title, an optional description and a checkbox or
-/// radio indicator, as the goal grid of "Learning preferences" (screen 99).
+/// radio indicator: the study-method cards of "Learning preferences" (98) and
+/// the goal grid of "Study routine" (99).
 ///
 /// Unselected it is Sage-50 with grey text and an outlined indicator;
 /// selected it is Sage-500 ("Sage-filled") with white text, a 60 % white
@@ -35,6 +36,8 @@ class SelectableCard extends StatelessWidget {
     this.description,
     this.leadingIcon,
     this.indicator = SelectableCardIndicator.checkbox,
+    this.indicatorColor = AppColors.sage500,
+    this.indicatorFill = AppColors.sage50,
     this.statesController,
   });
 
@@ -59,6 +62,13 @@ class SelectableCard extends StatelessWidget {
   final bool selected;
   final VoidCallback? onTap;
   final SelectableCardIndicator indicator;
+
+  /// Outline of an unselected indicator and the mark of a selected one.
+  /// Sage-500 on most screens; 98 uses Plume-500.
+  final Color indicatorColor;
+
+  /// Fill of a selected indicator (Sage-50; Plume-50 on 98).
+  final Color indicatorFill;
   final WidgetStatesController? statesController;
 
   @override
@@ -141,7 +151,7 @@ class SelectableCard extends StatelessWidget {
 
   Widget _indicator(bool disabled) {
     final isRadio = indicator == SelectableCardIndicator.radio;
-    final accent = disabled ? AppColors.grey200 : AppColors.sage500;
+    final accent = disabled ? AppColors.grey200 : indicatorColor;
     final BoxShape shape = isRadio ? BoxShape.circle : BoxShape.rectangle;
     final radius = isRadio
         ? null
@@ -154,7 +164,7 @@ class SelectableCard extends StatelessWidget {
       decoration: BoxDecoration(
         shape: shape,
         borderRadius: radius,
-        color: selected ? AppColors.sage50 : Colors.transparent,
+        color: selected ? indicatorFill : Colors.transparent,
         border: selected
             ? null
             : Border.all(color: accent, width: selectionBorderWidth),
