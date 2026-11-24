@@ -262,8 +262,20 @@ void main() {
           },
         ],
       };
-      final md = condenseFrame(frame);
+      final md = condenseFrame({
+        ...frame,
+        'children': [
+          ...frame['children']! as List,
+          {
+            'id': '7:10',
+            'name': 'Navbar Bottom + Home Indicator',
+            'type': 'INSTANCE',
+            'absoluteBoundingBox': {'width': 428, 'height': 95},
+          },
+        ],
+      });
       expect(md, contains('- system "Status bar - iPhone" 428×62'));
+      expect(md, contains('INSTANCE "Navbar Bottom + Home Indicator"'));
       expect(md, isNot(contains('9:41')));
       expect(md, contains('- art "Owl" 100×120 · 2 vectors, 1 image'));
       expect(md, contains('GROUP "Card"'));

@@ -118,7 +118,7 @@ void _writeNode(
   final indent = '  ' * depth;
   final name = node['name'] as String? ?? '';
   if (RegExp(
-    'status bar|home indicator',
+    '^(status bar|home indicator)',
     caseSensitive: false,
   ).hasMatch(name)) {
     out.writeln('$indent- system "$name" ${_size(node)}');
