@@ -70,6 +70,13 @@ class WidgetGallery extends StatelessWidget {
           SizedBox(height: AppSpacing.sm),
           AppNavbarTopMatrix(),
           SizedBox(height: AppSpacing.xl),
+          Text('Bottom nav', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: AppBottomNavMatrix(),
+          ),
+          SizedBox(height: AppSpacing.xl),
           Text('Progress bar', style: AppTypography.h5),
           SizedBox(height: AppSpacing.sm),
           SingleChildScrollView(

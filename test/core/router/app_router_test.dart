@@ -1,4 +1,5 @@
 import 'package:classmeet/app.dart';
+import 'package:classmeet/core/router/app_bottom_nav.dart';
 import 'package:classmeet/core/router/app_router.dart';
 import 'package:classmeet/core/router/not_found_screen.dart';
 import 'package:classmeet/core/router/routes.dart';
@@ -15,7 +16,6 @@ import 'package:classmeet/features/onboarding/presentation/screens/welcome_scree
 import 'package:classmeet/features/play/presentation/screens/play_hub_screen.dart';
 import 'package:classmeet/features/study/presentation/screens/reader_screen.dart';
 import 'package:classmeet/features/study/presentation/screens/study_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -162,7 +162,7 @@ void main() {
       Routes.friends,
     ]) {
       await goTo(tester, container, tab);
-      expect(find.byType(NavigationBar), findsOneWidget, reason: tab);
+      expect(find.byType(AppBottomNav), findsOneWidget, reason: tab);
     }
     for (final detail in [
       Routes.notifications,
@@ -172,7 +172,7 @@ void main() {
       Routes.profile,
     ]) {
       await goTo(tester, container, detail);
-      expect(find.byType(NavigationBar), findsNothing, reason: detail);
+      expect(find.byType(AppBottomNav), findsNothing, reason: detail);
     }
   });
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../assets/app_icons.dart';
+import '../../router/app_bottom_nav.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_semantic_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -211,6 +212,51 @@ class AppProgressBarMatrix extends StatelessWidget {
                 trackColor: AppColors.plume300,
               ),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// [AppBottomNav] with each tab selected, and the Create-open state, on a
+/// 428 wide page like the screens (frame 8 and 119).
+class AppBottomNavMatrix extends StatelessWidget {
+  const AppBottomNavMatrix({super.key});
+
+  static const _width = 428.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < AppBottomNavTab.values.length; i++) ...[
+          Text(
+            'Selected: ${AppBottomNavTab.values[i].label}',
+            style: AppTypography.c1,
+          ),
+          const SizedBox(height: AppSpacing.xxs),
+          SizedBox(
+            width: _width,
+            child: AppBottomNav(
+              currentIndex: i,
+              onTabSelected: (_) {},
+              createOpen: false,
+              onCreatePressed: () {},
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+        ],
+        const Text('Create open', style: AppTypography.c1),
+        const SizedBox(height: AppSpacing.xxs),
+        SizedBox(
+          width: _width,
+          child: AppBottomNav(
+            currentIndex: 0,
+            onTabSelected: (_) {},
+            createOpen: true,
+            onCreatePressed: () {},
           ),
         ),
       ],
