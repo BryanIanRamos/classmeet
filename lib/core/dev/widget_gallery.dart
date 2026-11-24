@@ -4,6 +4,7 @@ import '../assets/app_icons.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 import '../widgets/buttons/app_button.dart';
+import 'galleries/display_gallery.dart';
 import 'galleries/inputs_gallery.dart';
 import 'galleries/selection_gallery.dart';
 
@@ -36,6 +37,27 @@ class WidgetGallery extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SelectionGallery(),
+          ),
+          SizedBox(height: AppSpacing.xl),
+          Text('Avatar', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: AppAvatarMatrix(),
+          ),
+          SizedBox(height: AppSpacing.xl),
+          Text('Badge', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: AppBadgeMatrix(),
+          ),
+          SizedBox(height: AppSpacing.xl),
+          Text('Chip', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: AppChipMatrix(),
           ),
         ],
       ),
