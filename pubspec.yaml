@@ -67,6 +67,9 @@ flutter:
   assets:
     - assets/images/common/
     - assets/images/home/
+    - assets/images/onboarding/
+    - assets/images/create/
+    - assets/images/play/
     - assets/icons/
 
   # Bundled static fonts (SIL OFL 1.1; licenses in assets/fonts/OFL-*.txt).
