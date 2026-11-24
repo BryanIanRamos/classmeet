@@ -15,7 +15,7 @@ void main() {
     expect(w.talons, 24);
     expect(w.studyPoints, 300);
     final p = await repo.fetchRewardProgress();
-    expect((p.nextRewardTalons, p.done, p.total), (10, 171, 300));
+    expect((p.nextRewardTalons, p.done, p.total), (16, 171, 300));
     final s = await repo.fetchStreak();
     expect((s.days, s.freezesLeft), (6, 1));
   });

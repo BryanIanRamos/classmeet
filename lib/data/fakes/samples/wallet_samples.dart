@@ -5,9 +5,9 @@ import '../../models/wallet.dart';
 /// XP is not designed. // sample
 const sampleWallet = Wallet(talons: 24, studyPoints: 300, xp: 120);
 
-/// "Your next reward" on frame 14: +10 talons at 171/300 (INC-5).
+/// "Your next reward" on frame 14: +16 talons at 171/300.
 const sampleRewardProgress = RewardProgress(
-  nextRewardTalons: 10,
+  nextRewardTalons: 16,
   done: 171,
   total: 300,
 );
