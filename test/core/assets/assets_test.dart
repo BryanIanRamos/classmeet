@@ -22,8 +22,18 @@ void main() {
     }
   });
 
-  test('each Figma icon name maps to a distinct glyph', () {
-    final glyphs = AppIcons.byFigmaName.values.toSet();
-    expect(glyphs.length, AppIcons.byFigmaName.length);
+  test('each Figma icon name maps to a distinct glyph, except aliases', () {
+    final distinct = Map.of(AppIcons.byFigmaName)
+      ..removeWhere((name, _) => AppIcons.aliasedFigmaNames.contains(name));
+    expect(distinct.values.toSet().length, distinct.length);
+    for (final alias in AppIcons.aliasedFigmaNames) {
+      expect(AppIcons.byFigmaName, contains(alias));
+    }
+  });
+
+  test('Figma icon names are kebab-case Lucide names', () {
+    for (final name in AppIcons.byFigmaName.keys) {
+      expect(name, matches(RegExp(r'^[a-z0-9]+(-[a-z0-9]+)*$')), reason: name);
+    }
   });
 }
