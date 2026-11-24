@@ -7,6 +7,7 @@ import '../widgets/buttons/app_button.dart';
 import 'galleries/display_gallery.dart';
 import 'galleries/feedback_gallery.dart';
 import 'galleries/inputs_gallery.dart';
+import 'galleries/lists_gallery.dart';
 import 'galleries/navigation_gallery.dart';
 import 'galleries/selection_gallery.dart';
 
@@ -92,6 +93,18 @@ class WidgetGallery extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: FeedbackStatesMatrix(),
           ),
+          SizedBox(height: AppSpacing.xl),
+          Text('List row', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          AppListRowMatrix(),
+          SizedBox(height: AppSpacing.xl),
+          Text('Card', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          AppCardMatrix(),
+          SizedBox(height: AppSpacing.xl),
+          Text('Section header', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          SectionHeaderMatrix(),
         ],
       ),
     );
