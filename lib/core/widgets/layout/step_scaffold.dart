@@ -28,6 +28,18 @@ import 'screen_background.dart';
 /// inset 24 (12 + 12); the CTA is inset 12, 56 tall, with 12 above and below
 /// and 32 + the safe inset under it (the design shows the iPhone home
 /// indicator there).
+/// Where the primary button sits.
+enum StepCtaLayout {
+  /// Full width (inset 12) on a white band with a fade, over the scrolling
+  /// list (screen 98, whose cards run to the bottom).
+  sticky,
+
+  /// Under the content, inset 24 like the content, on the screen
+  /// background (screens 96, 97, 99: a spacer pushes it down). The list
+  /// scrolls above it and never under it.
+  inline,
+}
+
 class StepScaffold extends StatelessWidget {
   const StepScaffold({
     super.key,
@@ -42,6 +54,7 @@ class StepScaffold extends StatelessWidget {
     this.secondary,
     this.onBack,
     this.background,
+    this.ctaLayout = StepCtaLayout.sticky,
   }) : assert(totalSteps > 0),
        assert(step >= 0 && step <= totalSteps);
 
@@ -89,6 +102,12 @@ class StepScaffold extends StatelessWidget {
   /// Replaces the [ScreenBackground] (e.g. a plain white box).
   final Widget? background;
 
+  final StepCtaLayout ctaLayout;
+
+  /// Extra space under an inline CTA (96: 80 below the button in all,
+  /// 12 more than the sticky layout).
+  static const inlineExtraBottom = AppSpacing.sm;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -115,46 +134,83 @@ class StepScaffold extends StatelessWidget {
                   onBack: onBack,
                   backgroundColor: Colors.transparent,
                 ),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.only(
-                            left: contentInset,
-                            right: contentInset,
-                            top: AppSpacing.sm,
-                            bottom: footerHeight,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _header(colors),
-                              const SizedBox(height: AppSpacing.sm),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: blockInset,
-                                ),
-                                child: child,
-                              ),
-                            ],
-                          ),
+                if (ctaLayout == StepCtaLayout.sticky)
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: _scroll(colors, bottomPadding: footerHeight),
                         ),
-                      ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: _footer(colors, bottomInset),
-                      ),
-                    ],
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: _footer(colors, bottomInset),
+                        ),
+                      ],
+                    ),
+                  )
+                else ...[
+                  Expanded(child: _scroll(colors, bottomPadding: 0)),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      contentInset + blockInset,
+                      ctaPadding,
+                      contentInset + blockInset,
+                      ctaPadding +
+                          bottomSpacer +
+                          inlineExtraBottom +
+                          bottomInset,
+                    ),
+                    child: _actions(),
                   ),
-                ),
+                ],
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _scroll(AppSemanticColors colors, {required double bottomPadding}) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        left: contentInset,
+        right: contentInset,
+        top: AppSpacing.sm,
+        bottom: bottomPadding,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _header(colors),
+          const SizedBox(height: AppSpacing.sm),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: blockInset),
+            child: child,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actions() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppButton(
+          key: const ValueKey('step-primary'),
+          label: primaryLabel,
+          onPressed: onPrimary,
+          size: AppButtonSize.giant,
+          expand: true,
+        ),
+        if (secondary != null) ...[
+          const SizedBox(height: secondaryGap),
+          secondary!,
+        ],
+      ],
     );
   }
 
@@ -227,22 +283,7 @@ class StepScaffold extends StatelessWidget {
               ctaInset,
               ctaPadding + bottomSpacer + bottomInset,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppButton(
-                  key: const ValueKey('step-primary'),
-                  label: primaryLabel,
-                  onPressed: onPrimary,
-                  size: AppButtonSize.giant,
-                  expand: true,
-                ),
-                if (secondary != null) ...[
-                  const SizedBox(height: secondaryGap),
-                  secondary!,
-                ],
-              ],
-            ),
+            child: _actions(),
           ),
         ),
       ],

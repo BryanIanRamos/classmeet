@@ -235,7 +235,10 @@ void main() {
       VoidCallback? onPrimary,
       VoidCallback? onBack,
       Widget? secondary,
+      StepCtaLayout ctaLayout = StepCtaLayout.sticky,
+      int items = 20,
     }) => StepScaffold(
+      ctaLayout: ctaLayout,
       title: 'Your learning preferences',
       step: 3,
       totalSteps: 4,
@@ -247,7 +250,7 @@ void main() {
       secondary: secondary,
       child: Column(
         children: [
-          for (var i = 0; i < 20; i++)
+          for (var i = 0; i < items; i++)
             SizedBox(height: 64, child: Text('item $i')),
         ],
       ),
@@ -331,5 +334,54 @@ void main() {
         expect(tester.getRect(find.byKey(const ValueKey('step-primary'))), cta);
       });
     }
+    group('inline CTA (96, 97, 99)', () {
+      testWidgets('inset 24, 80 above the bottom edge, no white band', (
+        tester,
+      ) async {
+        await pump(
+          tester,
+          MediaQuery(
+            data: const MediaQueryData(
+              size: Size(428, 870),
+              padding: EdgeInsets.only(bottom: 24),
+            ),
+            child: scaffold(
+              onPrimary: () {},
+              ctaLayout: StepCtaLayout.inline,
+              items: 3,
+            ),
+          ),
+        );
+        final cta = tester.getRect(find.byKey(const ValueKey('step-primary')));
+        expect(cta.left, 24);
+        expect(cta.width, 428 - 48);
+        expect(870 - cta.bottom, 80);
+        expect(tester.takeException(), isNull);
+      });
+
+      for (final size in const [Size(360, 800), Size(428, 870)]) {
+        testWidgets('long content scrolls above the CTA at $size', (
+          tester,
+        ) async {
+          await pump(
+            tester,
+            scaffold(onPrimary: () {}, ctaLayout: StepCtaLayout.inline),
+            size: size,
+          );
+          final cta = tester.getRect(
+            find.byKey(const ValueKey('step-primary')),
+          );
+          await tester.drag(find.text('item 0'), const Offset(0, -3000));
+          await tester.pump();
+          expect(tester.takeException(), isNull);
+          final last = tester.getRect(find.text('item 19'));
+          expect(last.bottom, lessThanOrEqualTo(cta.top));
+          expect(
+            tester.getRect(find.byKey(const ValueKey('step-primary'))),
+            cta,
+          );
+        });
+      }
+    });
   });
 }
