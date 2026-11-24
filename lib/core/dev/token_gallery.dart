@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_gradients.dart';
 import '../theme/app_radii.dart';
 import '../theme/app_semantic_colors.dart';
+import '../theme/app_shadows.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 
@@ -54,13 +56,29 @@ class TokenGallery extends StatelessWidget {
                   _RadiusTile(name: name, radius: radius),
               ],
             ),
-            const _Section('Pending'),
-            Text(
-              'Shadows and the Surface Fade gradient are added after task 1.5 '
-              '(their values are not in the design notes yet).',
-              style: AppTypography.b3.copyWith(
-                color: context.colors.textSecondary,
-              ),
+            const _Section('Shadows'),
+            Wrap(
+              spacing: AppSpacing.lg,
+              runSpacing: AppSpacing.lg,
+              children: [
+                for (final MapEntry(key: name, value: shadows)
+                    in AppShadows.byFigmaName.entries)
+                  _ShadowTile(name: name, shadows: shadows),
+              ],
+            ),
+            const _Section('Surface Fade'),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: [
+                for (final (name, color) in const [
+                  ('sage100', AppColors.sage100),
+                  ('sprout100', AppColors.sprout100),
+                  ('talon100', AppColors.talon100),
+                  ('plume50', AppColors.plume50),
+                ])
+                  _FadeTile(name: name, color: color),
+              ],
             ),
           ],
         ),
@@ -250,6 +268,61 @@ class _SpacingRow extends StatelessWidget {
           Text('${value.round()}', style: AppTypography.c1),
         ],
       ),
+    );
+  }
+}
+
+class _ShadowTile extends StatelessWidget {
+  const _ShadowTile({required this.name, required this.shadows});
+
+  static const _size = 72.0;
+
+  final String name;
+  final List<BoxShadow> shadows;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: _size,
+          height: _size,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(AppRadii.xs)),
+            boxShadow: shadows,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(name, style: AppTypography.c2),
+      ],
+    );
+  }
+}
+
+class _FadeTile extends StatelessWidget {
+  const _FadeTile({required this.name, required this.color});
+
+  final String name;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            gradient: AppGradients.fade(color),
+            border: Border.all(color: AppColors.grey200),
+            borderRadius: const BorderRadius.all(Radius.circular(AppRadii.xs)),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xxs),
+        Text(name, style: AppTypography.c2),
+      ],
     );
   }
 }
