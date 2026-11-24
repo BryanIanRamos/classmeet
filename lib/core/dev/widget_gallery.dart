@@ -94,7 +94,9 @@ class WidgetGallery extends StatelessWidget {
           SizedBox(height: AppSpacing.sm),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: FeedbackStatesMatrix(),
+            // The states share the row with Expanded, so they need a bounded
+            // width inside the horizontal scroll (the golden uses 700 too).
+            child: SizedBox(width: 700, child: FeedbackStatesMatrix()),
           ),
           SizedBox(height: AppSpacing.xl),
           Text('List row', style: AppTypography.h5),
@@ -111,11 +113,17 @@ class WidgetGallery extends StatelessWidget {
           SizedBox(height: AppSpacing.xl),
           Text('Tabs', style: AppTypography.h5),
           SizedBox(height: AppSpacing.sm),
-          AppTabsMatrix(),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: AppTabsMatrix(),
+          ),
           SizedBox(height: AppSpacing.xl),
           Text('Dropdown', style: AppTypography.h5),
           SizedBox(height: AppSpacing.sm),
-          AppDropdownMatrix(),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: AppDropdownMatrix(),
+          ),
           SizedBox(height: AppSpacing.xl),
           Text('Stepper', style: AppTypography.h5),
           SizedBox(height: AppSpacing.sm),
@@ -130,7 +138,10 @@ class WidgetGallery extends StatelessWidget {
           SizedBox(height: AppSpacing.xl),
           Text('Screen background', style: AppTypography.h5),
           SizedBox(height: AppSpacing.sm),
-          ScreenBackgroundMatrix(),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: ScreenBackgroundMatrix(),
+          ),
           SizedBox(height: AppSpacing.xl),
           Text('Sheet', style: AppTypography.h5),
           SizedBox(height: AppSpacing.sm),

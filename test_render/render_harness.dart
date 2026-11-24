@@ -48,7 +48,9 @@ final _boundary = GlobalKey(debugLabel: 'render boundary');
 /// Fails on overflow or any other error raised while building or painting.
 /// [fullPage] grows the viewport to the scroll content's full height, like a
 /// tall Figma frame. Set [settle] to false for screens with endless
-/// animations, such as loaders.
+/// animations, such as loaders. A missing image file fails the render too,
+/// unless [allowMissingImages] is set (the widget gallery shows the
+/// illustration placeholder on purpose).
 Future<void> renderScreen(
   WidgetTester tester,
   String name,
@@ -56,17 +58,32 @@ Future<void> renderScreen(
   List<Override> overrides = const [],
   bool fullPage = false,
   bool settle = true,
+  bool allowMissingImages = false,
 }) async {
   addTearDown(tester.view.reset);
   for (final size in renderSizes) {
     final width = size.width.round();
     await tester.pumpWidget(const SizedBox.shrink()); // fresh state per size
-    await _pumpAt(tester, size, screen, overrides, settle: settle);
+    await _pumpAt(
+      tester,
+      size,
+      screen,
+      overrides,
+      settle: settle,
+      allowMissingImages: allowMissingImages,
+    );
     if (fullPage) {
       final extra = _maxScrollExtent(tester);
       if (extra > 0) {
         final tall = Size(size.width, size.height + extra);
-        await _pumpAt(tester, tall, screen, overrides, settle: settle);
+        await _pumpAt(
+          tester,
+          tall,
+          screen,
+          overrides,
+          settle: settle,
+          allowMissingImages: allowMissingImages,
+        );
       }
     }
     expect(tester.takeException(), isNull, reason: '$name at ${width}dp');
@@ -83,6 +100,7 @@ Future<void> _pumpAt(
   Widget screen,
   List<Override> overrides, {
   required bool settle,
+  required bool allowMissingImages,
 }) async {
   final padding = FakeViewPadding(
     top: renderViewPadding.top * renderPixelRatio,
@@ -108,7 +126,7 @@ Future<void> _pumpAt(
       ),
     ),
   );
-  await _loadImages(tester);
+  await _loadImages(tester, allowMissing: allowMissingImages);
   if (settle) {
     await tester.pumpAndSettle();
   } else {
@@ -118,16 +136,22 @@ Future<void> _pumpAt(
 
 /// Decodes every image on screen (asset loads are real I/O, which only
 /// completes outside the test's fake clock).
-Future<void> _loadImages(WidgetTester tester) async {
+Future<void> _loadImages(
+  WidgetTester tester, {
+  required bool allowMissing,
+}) async {
+  // Without onError, precacheImage reports a load failure as a test error.
+  final onError = allowMissing ? (Object _, StackTrace? _) {} : null;
   await tester.runAsync(() async {
     for (final element in find.byType(Image, skipOffstage: false).evaluate()) {
-      await precacheImage((element.widget as Image).image, element);
+      final image = (element.widget as Image).image;
+      await precacheImage(image, element, onError: onError);
     }
     final boxes = find.byType(DecoratedBox, skipOffstage: false).evaluate();
     for (final element in boxes) {
       final decoration = (element.widget as DecoratedBox).decoration;
       if (decoration case BoxDecoration(image: DecorationImage(:final image))) {
-        await precacheImage(image, element);
+        await precacheImage(image, element, onError: onError);
       }
     }
   });
