@@ -4,6 +4,7 @@ import '../assets/app_icons.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 import '../widgets/buttons/app_button.dart';
+import 'galleries/controls_gallery.dart';
 import 'galleries/display_gallery.dart';
 import 'galleries/feedback_gallery.dart';
 import 'galleries/inputs_gallery.dart';
@@ -105,6 +106,18 @@ class WidgetGallery extends StatelessWidget {
           Text('Section header', style: AppTypography.h5),
           SizedBox(height: AppSpacing.sm),
           SectionHeaderMatrix(),
+          SizedBox(height: AppSpacing.xl),
+          Text('Tabs', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          AppTabsMatrix(),
+          SizedBox(height: AppSpacing.xl),
+          Text('Dropdown', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          AppDropdownMatrix(),
+          SizedBox(height: AppSpacing.xl),
+          Text('Stepper', style: AppTypography.h5),
+          SizedBox(height: AppSpacing.sm),
+          AppStepperMatrix(),
         ],
       ),
     );
