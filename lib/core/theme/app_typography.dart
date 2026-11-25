@@ -9,8 +9,9 @@ import 'package:flutter/painting.dart';
 /// surrounding `DefaultTextStyle` or take one with `copyWith(color: ...)`.
 ///
 /// Headings/H4 is not used anywhere in the file (checked in task 1.5).
-/// Two styles carry no Figma style but recur on screens: [c3Medium] and
-/// [h3ExtraBold].
+/// Some styles carry no Figma style but recur on screens: [c3Medium],
+/// [h3ExtraBold], and the Bold weights Figma applies as character overrides
+/// ([b3Bold], [c1Bold], [c3Bold]; specs mark them `**w700 override**`).
 abstract final class AppTypography {
   /// Font family for every style except the `inter*` ones.
   static const jakarta = 'PlusJakartaSans';
@@ -135,6 +136,17 @@ abstract final class AppTypography {
     leadingDistribution: TextLeadingDistribution.even,
   );
 
+  /// Body/B3 with the Bold override: 14/20 Bold (the week title in 87, the
+  /// rank numbers in 132).
+  static const b3Bold = TextStyle(
+    fontFamily: jakarta,
+    fontSize: 14,
+    height: 20 / 14,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0,
+    leadingDistribution: TextLeadingDistribution.even,
+  );
+
   // Captions.
 
   /// Caption/C1: 12/16 Regular.
@@ -174,6 +186,28 @@ abstract final class AppTypography {
     fontSize: 10,
     height: 14 / 10,
     fontWeight: FontWeight.w500,
+    letterSpacing: 0,
+    leadingDistribution: TextLeadingDistribution.even,
+  );
+
+  /// Caption C1/C2 with the Bold override: 12/16 Bold (the Home stat card
+  /// titles and "+2 talons" in 8).
+  static const c1Bold = TextStyle(
+    fontFamily: jakarta,
+    fontSize: 12,
+    height: 16 / 12,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0,
+    leadingDistribution: TextLeadingDistribution.even,
+  );
+
+  /// Caption/C3 with the Bold override: 10/14 Bold ("Reply" in 128,
+  /// "AI-generated" in 118).
+  static const c3Bold = TextStyle(
+    fontFamily: jakarta,
+    fontSize: 10,
+    height: 14 / 10,
+    fontWeight: FontWeight.w700,
     letterSpacing: 0,
     leadingDistribution: TextLeadingDistribution.even,
   );
@@ -252,7 +286,7 @@ abstract final class AppTypography {
     leadingDistribution: TextLeadingDistribution.even,
   );
 
-  /// Every style by its Figma text-style name (the two styles without one are
+  /// Every style by its Figma text-style name (the styles without one are
   /// named after their base style). Used by the token gallery and the
   /// tests.
   static const Map<String, TextStyle> byFigmaName = {
@@ -266,11 +300,14 @@ abstract final class AppTypography {
     'Body/B1': b1,
     'Body/B2': b2,
     'Body/B3': b3,
+    'Body/B3 Bold': b3Bold,
     'Body/B4': b4,
     'Caption/C1': c1,
+    'Caption/C1 Bold': c1Bold,
     'Caption/C2': c2,
     'Caption/C3': c3,
     'Caption/C3 Medium': c3Medium,
+    'Caption/C3 Bold': c3Bold,
     'Button/Giant': buttonGiant,
     'Button/Large': buttonLarge,
     'Button/Medium': buttonMedium,

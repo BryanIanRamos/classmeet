@@ -9,7 +9,8 @@ void main() {
   const inter = 'Inter';
 
   // Values copied from design/notes/tokens.md (Figma text styles), plus the
-  // two unnamed styles found on the screens in task 1.5.
+  // unnamed styles found on the screens: task 1.5 and the Bold character
+  // overrides (specs mark them `**w700 override**`).
   const specs = <String, Spec>{
     'Headings/H1': (family: jakarta, size: 48, lineHeight: 58, weight: 600),
     'Headings/H2': (family: jakarta, size: 40, lineHeight: 48, weight: 600),
@@ -26,8 +27,10 @@ void main() {
     'Body/B1': (family: jakarta, size: 16, lineHeight: 24, weight: 400),
     'Body/B2': (family: jakarta, size: 16, lineHeight: 24, weight: 500),
     'Body/B3': (family: jakarta, size: 14, lineHeight: 20, weight: 400),
+    'Body/B3 Bold': (family: jakarta, size: 14, lineHeight: 20, weight: 700),
     'Body/B4': (family: jakarta, size: 14, lineHeight: 20, weight: 500),
     'Caption/C1': (family: jakarta, size: 12, lineHeight: 16, weight: 400),
+    'Caption/C1 Bold': (family: jakarta, size: 12, lineHeight: 16, weight: 700),
     'Caption/C2': (family: jakarta, size: 12, lineHeight: 16, weight: 500),
     'Caption/C3': (family: jakarta, size: 10, lineHeight: 14, weight: 400),
     'Caption/C3 Medium': (
@@ -36,6 +39,7 @@ void main() {
       lineHeight: 14,
       weight: 500,
     ),
+    'Caption/C3 Bold': (family: jakarta, size: 10, lineHeight: 14, weight: 700),
     'Button/Giant': (family: jakarta, size: 18, lineHeight: 24, weight: 600),
     'Button/Large': (family: jakarta, size: 16, lineHeight: 20, weight: 600),
     'Button/Medium': (family: jakarta, size: 14, lineHeight: 16, weight: 600),
