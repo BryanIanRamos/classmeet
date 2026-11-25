@@ -32,11 +32,13 @@ void main() {
         AppButtonMatrix.states.length *
         AppButtonSize.values.length;
     final tones = AppButtonTone.values.length * AppButtonStyle.values.length;
-    expect(find.byType(AppButton), findsNWidgets(cells * 2 + tones));
+    // Plus one disabled button per disabled look.
+    final looks = AppButtonDisabledLook.values.length;
+    expect(find.byType(AppButton), findsNWidgets(cells * 2 + tones + looks));
     final disabled = tester
         .widgetList<TextButton>(find.byType(TextButton))
         .where((b) => !b.enabled);
-    expect(disabled.length, cells * 2 ~/ AppButtonMatrix.states.length);
+    expect(disabled.length, cells * 2 ~/ AppButtonMatrix.states.length + looks);
   });
 
   testWidgets('opens at /dev/widgets in debug builds', (tester) async {
