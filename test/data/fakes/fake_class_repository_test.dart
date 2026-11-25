@@ -40,6 +40,20 @@ void main() {
     expect(await repo.fetchClasses(), hasLength(4));
   });
 
+  test('findClassByCode previews the class without joining it', () async {
+    final found = await repo.findClassByCode(' ite16-2026 ');
+    expect(found.code, 'ITE16');
+    expect(found.teacher, isNotEmpty);
+    expect(
+      (await repo.fetchClasses()).map((c) => c.id),
+      isNot(contains(found.id)),
+    );
+    await expectLater(
+      repo.findClassByCode('WRONG'),
+      throwsA(isA<RepositoryException>()),
+    );
+  });
+
   test('joinClass with an unknown code fails', () async {
     await expectLater(
       repo.joinClass('WRONG'),
@@ -61,5 +75,9 @@ void main() {
     expect(r.fetchClasses(), throwsA(isA<RepositoryException>()));
     expect(r.fetchClass('ite13'), throwsA(isA<RepositoryException>()));
     expect(r.joinClass('ITE16-2026'), throwsA(isA<RepositoryException>()));
+    expect(
+      r.findClassByCode('ITE16-2026'),
+      throwsA(isA<RepositoryException>()),
+    );
   });
 }

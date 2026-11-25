@@ -4,8 +4,9 @@ import '../repositories/repository_exception.dart';
 import 'fake_config.dart';
 import 'samples/class_samples.dart';
 
-/// In-memory [ClassRepository]. [joinClass] accepts [joinableClassCode] and
-/// adds that class to later [fetchClasses] results. [fetchClass] knows every
+/// In-memory [ClassRepository]. [findClassByCode] and [joinClass] accept
+/// [joinableClassCode] (any case); joining adds that class to later
+/// [fetchClasses] results. [fetchClass] knows every
 /// sample class, joined or not, so detail screens work in every scenario.
 class FakeClassRepository implements ClassRepository {
   FakeClassRepository(this._config, {DateTime Function()? clock})
@@ -28,13 +29,20 @@ class FakeClassRepository implements ClassRepository {
       });
 
   @override
+  Future<StudyClass> findClassByCode(String code) =>
+      _config.answer('findClassByCode', () => _classFor(code));
+
+  @override
   Future<StudyClass> joinClass(String code) => _config.answer('joinClass', () {
+    final found = _classFor(code);
+    if (!_classes.any((c) => c.id == found.id)) _classes.add(found);
+    return found;
+  });
+
+  StudyClass _classFor(String code) {
     if (code.trim().toUpperCase() != joinableClassCode) {
       throw RepositoryException('Unknown class code: $code');
     }
-    if (!_classes.any((c) => c.id == joinableClass.id)) {
-      _classes.add(joinableClass);
-    }
     return joinableClass;
-  });
+  }
 }
