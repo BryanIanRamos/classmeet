@@ -1,12 +1,6 @@
-import 'package:classmeet/app.dart';
-import 'package:classmeet/core/clock.dart';
-import 'package:classmeet/core/router/app_router.dart';
 import 'package:classmeet/core/router/routes.dart';
 import 'package:classmeet/core/widgets/feedback/coming_soon_screen.dart';
 import 'package:classmeet/core/widgets/feedback/error_state.dart';
-import 'package:classmeet/data/fakes/fake_config.dart';
-import 'package:classmeet/data/providers.dart';
-import 'package:classmeet/features/auth/application/session_controller.dart';
 import 'package:classmeet/features/home/application/home_providers.dart';
 import 'package:classmeet/features/home/presentation/home_format.dart';
 import 'package:classmeet/features/home/presentation/screens/home_dashboard_screen.dart';
@@ -14,69 +8,12 @@ import 'package:classmeet/features/home/presentation/screens/notifications_scree
 import 'package:classmeet/features/home/presentation/screens/talon_credits_screen.dart';
 import 'package:classmeet/features/home/presentation/widgets/home_stat_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 
-const _empty = FakeConfig(scenario: FakeScenario.empty, latency: Duration.zero);
-const _error = FakeConfig(scenario: FakeScenario.error, latency: Duration.zero);
-
-/// The design's "Good evening".
-final _evening = DateTime(2026, 11, 24, 19, 30);
-
-/// Opens the signed-in app on Home.
-Future<void> pumpHome(
-  WidgetTester tester, {
-  FakeConfig config = FakeConfig.instant,
-  Size size = const Size(428, 926),
-}) async {
-  await tester.binding.setSurfaceSize(size);
-  addTearDown(() => tester.binding.setSurfaceSize(null));
-  await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        fakeConfigProvider.overrideWithValue(config),
-        initialSessionStatusProvider.overrideWithValue(SessionStatus.ready),
-        clockProvider.overrideWithValue(() => _evening),
-      ],
-      retry: (_, _) => null,
-      child: const ClassMeetApp(),
-    ),
-  );
-  await tester.pumpAndSettle();
-  router(tester).go(Routes.home);
-  await tester.pumpAndSettle();
-}
-
-ProviderContainer container(WidgetTester tester) =>
-    ProviderScope.containerOf(tester.element(find.byType(ClassMeetApp)));
-
-/// The top-most location, pushed routes included.
-String location(WidgetTester tester) => router(tester).state.uri.toString();
-
-GoRouter router(WidgetTester tester) => container(tester).read(routerProvider);
+import 'home_test_helpers.dart';
 
 Finder statCard(String title) =>
     find.byWidgetPredicate((w) => w is HomeStatCard && w.title == title);
-
-/// A Home card meta line ([HomeMetaLine]) by its visible text; the gaps
-/// around the dots are placeholders.
-Finder meta(String text) => find.byWidgetPredicate(
-  (w) =>
-      w is RichText &&
-      w.text.toPlainText(includeSemanticsLabels: false).replaceAll('￼', ' ') ==
-          text,
-);
-
-/// Scrolls the lazy Home list until [finder] is built and on screen.
-Future<void> reveal(WidgetTester tester, Finder finder) async {
-  await tester.scrollUntilVisible(
-    finder,
-    200,
-    scrollable: find.byType(Scrollable).first,
-  );
-  await tester.pumpAndSettle();
-}
 
 void main() {
   testWidgets('shows the header, hero card and stat cards from the fakes', (
@@ -152,7 +89,7 @@ void main() {
   testWidgets('empty scenario: nothing planned today, Continue opens Study', (
     tester,
   ) async {
-    await pumpHome(tester, config: _empty);
+    await pumpHome(tester, config: emptyConfig);
     expect(find.text('All done for today'), findsOneWidget);
     expect(find.textContaining('remaining'), findsNothing);
     await tester.tap(find.text('Continue studying'));
@@ -163,7 +100,7 @@ void main() {
   testWidgets('error scenario: nameless greeting and a retryable error', (
     tester,
   ) async {
-    await pumpHome(tester, config: _error);
+    await pumpHome(tester, config: errorConfig);
     expect(find.text('Good evening!'), findsOneWidget);
     expect(find.text('BSIT 2A · CSU'), findsNothing);
     expect(find.byType(ErrorState), findsOneWidget);
@@ -180,18 +117,18 @@ void main() {
     expect(find.text('Coming up next'), findsOneWidget);
     expect(find.text('View study plan'), findsOneWidget);
     expect(find.text('IT109 Midterm'), findsOneWidget);
-    expect(meta('3 activities left · In 5 days'), findsOneWidget);
+    expect(richLine('3 activities left · In 5 days'), findsOneWidget);
     expect(find.text('67%'), findsOneWidget);
     expect(find.text('Pick up where you left off'), findsOneWidget);
     expect(find.text('Data Structure Reviewer'), findsOneWidget);
-    expect(meta('1 module left · 40% read'), findsOneWidget);
+    expect(richLine('1 module left · 40% read'), findsOneWidget);
     expect(find.text('40%'), findsOneWidget);
     expect(find.text('Earn more talon credits'), findsOneWidget);
     expect(find.text('General Knowledge Quiz'), findsOneWidget);
     expect(find.text('Weekly Survey'), findsOneWidget);
-    expect(meta('+5 talons · Resets at midnight'), findsOneWidget);
+    expect(richLine('+5 talons · Resets at midnight'), findsOneWidget);
     // The survey closes at the end of Sunday 2026-11-29.
-    expect(meta('+5 talons · Available until Sunday'), findsOneWidget);
+    expect(richLine('+5 talons · Available until Sunday'), findsOneWidget);
   });
 
   for (final (label, finder, expected) in <(String, Finder, String)>[
@@ -215,7 +152,7 @@ void main() {
   }
 
   testWidgets('empty scenario hides the lower sections', (tester) async {
-    await pumpHome(tester, config: _empty, size: const Size(428, 2000));
+    await pumpHome(tester, config: emptyConfig, size: const Size(428, 2000));
     expect(find.text('Coming up next'), findsNothing);
     expect(find.text('Pick up where you left off'), findsNothing);
     expect(find.text('Earn more talon credits'), findsNothing);
