@@ -20,6 +20,11 @@ final walletProvider = FutureProvider<Wallet>(
   (ref) => ref.watch(walletRepositoryProvider).fetchWallet(),
 );
 
+/// Progress toward the next talon reward: "+16 talons", 171/300 (14).
+final rewardProgressProvider = FutureProvider<RewardProgress>(
+  (ref) => ref.watch(walletRepositoryProvider).fetchRewardProgress(),
+);
+
 /// The study streak card (8).
 final streakProvider = FutureProvider<Streak>(
   (ref) => ref.watch(walletRepositoryProvider).fetchStreak(),
