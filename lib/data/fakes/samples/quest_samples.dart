@@ -109,7 +109,7 @@ const dailyQuizQuestions = [
   ),
 ];
 
-/// Frame 16. Which question uses chips or radios is // sample.
+/// Frame 16: the first question is chips, the other two are radio cards.
 const weeklySurvey = Survey(
   id: weeklySurveyId,
   title: "How's your study week going?",
@@ -134,7 +134,7 @@ const weeklySurvey = Survey(
     SurveyQuestion(
       id: 'hours',
       prompt: 'How much time did you spend studying this week?',
-      style: SurveyQuestionStyle.chips,
+      style: SurveyQuestionStyle.radios,
       options: [
         'Under 2 hours',
         '2–5 hours',

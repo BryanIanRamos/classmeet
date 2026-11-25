@@ -1,6 +1,7 @@
 import 'package:classmeet/data/fakes/fake_config.dart';
 import 'package:classmeet/data/fakes/fake_quest_repository.dart';
 import 'package:classmeet/data/models/quest.dart';
+import 'package:classmeet/data/models/survey.dart';
 import 'package:classmeet/data/repositories/repository_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -60,6 +61,15 @@ void main() {
     final claimed = await open.claimQuest('daily-gk-quiz');
     expect(claimed.status, QuestStatus.claimed);
     expect((await open.fetchQuests()).single.status, QuestStatus.claimed);
+  });
+
+  test('survey questions use the frame-16 styles', () async {
+    final s = await repo.fetchWeeklySurvey();
+    expect(s.questions.map((q) => q.style), [
+      SurveyQuestionStyle.chips,
+      SurveyQuestionStyle.radios,
+      SurveyQuestionStyle.radios,
+    ]);
   });
 
   test('survey runs through submit then claim', () async {
