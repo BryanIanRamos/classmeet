@@ -56,8 +56,8 @@ void main() {
     final origin = tester.getTopLeft(find.byType(AppListRow));
     final slot = tester.getRect(find.byKey(const ValueKey('list-row-leading')));
     expect(slot.size, const Size(40, 40));
-    // Padding 16 (the border sits inside the box, no extra inset).
-    expect(slot.topLeft - origin, const Offset(16, 16));
+    // Border 1 + padding 16: Figma lays the stroke out inside the card.
+    expect(slot.topLeft - origin, const Offset(17, 17));
     final title = tester.widget<Text>(find.text('IT109 Midterm'));
     expect(title.style!.fontSize, AppTypography.s1.fontSize);
     final sub = tester.widget<Text>(find.text('3 activities left'));
@@ -67,9 +67,12 @@ void main() {
     expect(tester.getTopLeft(find.text('IT109 Midterm')).dx, slot.right + 10);
     final chevron = tester.getRect(find.byIcon(AppIcons.chevronRight));
     expect(chevron.size, const Size(24, 24));
-    expect(chevron.right, 394 - 16);
+    expect(chevron.right, 394 - 17);
     // The chevron is centred on the 28 title line.
-    expect(chevron.center.dy, origin.dy + 16 + 14);
+    expect(chevron.center.dy, origin.dy + 17 + 14);
+    // 1 + 16 + 52 (title 28, subtitle 4 + 16 + 4) + 4 + bar 14 + 4 + 16 + 1:
+    // the 108 of the Home cards (spec 8).
+    expect(tester.getSize(find.byType(AppListRow)).height, 108);
     final d = firstDecoration(tester);
     expect(d.color, AppColors.grey50);
     expect(d.borderRadius, BorderRadius.circular(16));

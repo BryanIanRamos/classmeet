@@ -41,6 +41,17 @@ void main() {
     expect(d.color, AppColors.grey50);
     expect(d.borderRadius, BorderRadius.circular(16));
     expect((d.border! as Border).top.color, AppColors.grey300);
+    // 1 border + 16 padding on each side, around the 20 child.
+    expect(tester.getSize(find.byType(AppCard)), const Size(350, 54));
+  });
+
+  testWidgets('without a border the padding alone insets the child', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const AppCard(borderColor: null, child: SizedBox(height: 20)),
+    );
     expect(tester.getSize(find.byType(AppCard)), const Size(350, 52));
   });
 

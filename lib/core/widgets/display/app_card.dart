@@ -10,7 +10,10 @@ import '../../theme/app_typography.dart';
 /// The ClassMeet card (DS Card 5248:10244 and the Home list cards).
 ///
 /// The default constructor is the card of the screens: Grey-50 fill, Grey-300
-/// 1px border, radius 16, padding 16, holding any [child]. [AppCard.vertical]
+/// 1px border, radius 16, padding 16, holding any [child]. The border takes
+/// layout space outside the padding, as Figma lays these strokes out
+/// (`strokesIncludedInLayout`, "(in layout)" in the specs): the child sits
+/// 1 + 16 from the edge, so a Home list card is 1 + 16 + content + 16 + 1. [AppCard.vertical]
 /// and [AppCard.horizontalSmall] are the DS layouts (image area plus text);
 /// they use the DS white fill and shadow 500, with radius 16 as on the
 /// screens (the kit shows 12) and Plus Jakarta Sans: title S2 (kit Inter
@@ -115,8 +118,11 @@ class AppCard extends StatefulWidget {
   final Color color;
   final Color pressedColor;
 
-  /// Null draws no border.
+  /// Null draws no border (and takes no space).
   final Color? borderColor;
+
+  /// Width of the border, laid out outside [padding].
+  static const borderWidth = 1.0;
   final double radius;
   final List<BoxShadow>? shadows;
   final String? semanticLabel;
@@ -137,16 +143,23 @@ class _AppCardState extends State<AppCard> {
     final enabled = widget.onTap != null;
     final radius = BorderRadius.circular(widget.radius);
     final borderColor = widget.borderColor;
+    // Border.all defaults to AppCard.borderWidth (1).
+    final border = borderColor == null ? null : Border.all(color: borderColor);
     Widget card = DecoratedBox(
       decoration: BoxDecoration(
         color: enabled && _pressed ? widget.pressedColor : widget.color,
         borderRadius: radius,
-        border: borderColor == null ? null : Border.all(color: borderColor),
+        border: border,
         boxShadow: widget.shadows,
       ),
       child: ClipRRect(
         borderRadius: radius,
-        child: Padding(padding: widget.padding, child: widget.child),
+        child: Padding(
+          padding: border == null
+              ? widget.padding
+              : widget.padding.add(border.dimensions),
+          child: widget.child,
+        ),
       ),
     );
     if (enabled) {

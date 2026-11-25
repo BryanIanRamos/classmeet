@@ -29,7 +29,8 @@ enum AppListRowStyle {
 /// [trailing] widget (badge, checkbox, radio, toggle, stepper...) and, with
 /// [showChevron], a 24 chevron. Pass [subtitleWidget] instead of [subtitle]
 /// for a rich meta line (e.g. a "+2 talons" span). [bottom] sits under the
-/// row (e.g. an `AppProgressBar`).
+/// row with 4 above and below (e.g. an `AppProgressBar`): with a title,
+/// subtitle and bar the card is 108 tall, as on Home.
 ///
 /// A null [onTap] makes the row static; otherwise it shows a flat pressed
 /// fill. When the trailing control is itself interactive (checkbox, toggle),
@@ -197,8 +198,9 @@ class AppListRow extends StatelessWidget {
             child: Align(alignment: Alignment.centerLeft, child: row),
           ),
         if (bottom != null)
+          // The bar's frame on Home: column pad 4/0 (spec 8 "Frame 1147").
           Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.xxs),
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxs),
             child: bottom,
           ),
       ],
