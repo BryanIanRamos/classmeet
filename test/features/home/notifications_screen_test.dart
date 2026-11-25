@@ -137,6 +137,27 @@ void main() {
     expect(find.byType(ErrorState), findsOneWidget);
   });
 
+  testWidgets('leaving while a refetch is in flight does not throw', (
+    tester,
+  ) async {
+    const slow = FakeConfig(latency: Duration(seconds: 2));
+    await pump(tester, config: slow, withBackStack: true);
+    await tester.tap(find.text('open'));
+    await tester.pump(); // build the route; the first load starts
+    await tester.pump(const Duration(seconds: 3)); // route in, first load
+    await tester.pump();
+    expect(find.text('Quiz due tonight'), findsOneWidget);
+    await tester.tap(find.text('Rewards')); // a 2 s refetch starts
+    await tester.pump();
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pump(); // the pop starts
+    await tester.pump(const Duration(seconds: 1)); // route out
+    await tester.pump(); // removed; the provider is disposed
+    expect(find.byType(NotificationsScreen), findsNothing);
+    await tester.pump(const Duration(seconds: 2)); // the late answer lands
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('back pops the screen', (tester) async {
     await pump(tester, withBackStack: true);
     await tester.tap(find.text('open'));

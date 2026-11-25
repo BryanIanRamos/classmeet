@@ -80,12 +80,15 @@ class NotificationsController extends AsyncNotifier<List<AppNotification>> {
     final request = ++_request;
     state = const AsyncLoading<List<AppNotification>>();
     final next = await AsyncValue.guard(_fetch);
-    if (request == _request) state = next;
+    // Drop an answer that arrives after a newer request or after the screen
+    // closed (the provider is auto-disposed).
+    if (ref.mounted && request == _request) state = next;
   }
 
   /// Marks everything read; the unread dots go away.
   Future<void> markAllRead() async {
     await ref.read(notificationRepositoryProvider).markAllRead();
+    if (!ref.mounted) return;
     final items = state.value;
     if (items == null) return;
     state = AsyncData([
