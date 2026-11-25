@@ -8,6 +8,7 @@ import 'package:classmeet/data/fakes/fake_config.dart';
 import 'package:classmeet/data/providers.dart';
 import 'package:classmeet/features/auth/application/session_controller.dart';
 import 'package:classmeet/features/home/application/home_providers.dart';
+import 'package:classmeet/features/home/presentation/home_format.dart';
 import 'package:classmeet/features/home/presentation/screens/home_dashboard_screen.dart';
 import 'package:classmeet/features/home/presentation/screens/notifications_screen.dart';
 import 'package:classmeet/features/home/presentation/screens/talon_credits_screen.dart';
@@ -57,6 +58,25 @@ GoRouter router(WidgetTester tester) => container(tester).read(routerProvider);
 
 Finder statCard(String title) =>
     find.byWidgetPredicate((w) => w is HomeStatCard && w.title == title);
+
+/// A Home card meta line ([HomeMetaLine]) by its visible text; the gaps
+/// around the dots are placeholders.
+Finder meta(String text) => find.byWidgetPredicate(
+  (w) =>
+      w is RichText &&
+      w.text.toPlainText(includeSemanticsLabels: false).replaceAll('￼', ' ') ==
+          text,
+);
+
+/// Scrolls the lazy Home list until [finder] is built and on screen.
+Future<void> reveal(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(
+    finder,
+    200,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.pumpAndSettle();
+}
 
 void main() {
   testWidgets('shows the header, hero card and stat cards from the fakes', (
@@ -155,10 +175,81 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('shows the lower sections from the fakes', (tester) async {
+    await pumpHome(tester, size: const Size(428, 2000));
+    expect(find.text('Coming up next'), findsOneWidget);
+    expect(find.text('View study plan'), findsOneWidget);
+    expect(find.text('IT109 Midterm'), findsOneWidget);
+    expect(meta('3 activities left · In 5 days'), findsOneWidget);
+    expect(find.text('67%'), findsOneWidget);
+    expect(find.text('Pick up where you left off'), findsOneWidget);
+    expect(find.text('Data Structure Reviewer'), findsOneWidget);
+    expect(meta('1 module left · 40% read'), findsOneWidget);
+    expect(find.text('40%'), findsOneWidget);
+    expect(find.text('Earn more talon credits'), findsOneWidget);
+    expect(find.text('General Knowledge Quiz'), findsOneWidget);
+    expect(find.text('Weekly Survey'), findsOneWidget);
+    expect(meta('+5 talons · Resets at midnight'), findsOneWidget);
+    // The survey closes at the end of Sunday 2026-11-29.
+    expect(meta('+5 talons · Available until Sunday'), findsOneWidget);
+  });
+
+  for (final (label, finder, expected) in <(String, Finder, String)>[
+    ('View study plan link', find.text('View study plan'), Routes.studyPlan),
+    ('goal card', find.text('IT109 Midterm'), Routes.studyPlan),
+    (
+      'material card',
+      find.text('Data Structure Reviewer'),
+      Routes.reader('data-structure-reviewer'),
+    ),
+    ('quiz card', find.text('General Knowledge Quiz'), Routes.dailyQuiz),
+    ('survey card', find.text('Weekly Survey'), Routes.weeklySurvey),
+  ]) {
+    testWidgets('$label navigates', (tester) async {
+      await pumpHome(tester);
+      await reveal(tester, finder);
+      await tester.tap(finder);
+      await tester.pumpAndSettle();
+      expect(location(tester), expected);
+    });
+  }
+
+  testWidgets('empty scenario hides the lower sections', (tester) async {
+    await pumpHome(tester, config: _empty, size: const Size(428, 2000));
+    expect(find.text('Coming up next'), findsNothing);
+    expect(find.text('Pick up where you left off'), findsNothing);
+    expect(find.text('Earn more talon credits'), findsNothing);
+  });
+
   testWidgets('no overflow at 360 dp', (tester) async {
     await pumpHome(tester, size: const Size(360, 800));
     expect(tester.takeException(), isNull);
     expect(find.text('Earn by studying'), findsOneWidget);
+    await reveal(tester, find.text('Weekly Survey'));
+    expect(tester.takeException(), isNull);
+  });
+
+  group('home_format', () {
+    test('weekday names and the survey availability', () {
+      expect(weekdayName(DateTime(2026, 11, 23)), 'Monday');
+      expect(weekdayName(DateTime(2026, 11, 29)), 'Sunday');
+      expect(
+        availableUntilLabel(DateTime(2026, 11, 27, 23, 59)),
+        'Available until Friday',
+      );
+    });
+
+    test('counts calendar days from now', () {
+      final now = DateTime(2026, 11, 24, 23, 59);
+      expect(daysUntil(now, DateTime(2026, 11, 25, 0, 1)), 1);
+      expect(daysUntil(now, DateTime(2026, 11, 29, 8)), 5);
+      expect(dueLabel(0), 'Today');
+      expect(dueLabel(-2), 'Today');
+      expect(dueLabel(1), 'In 1 day');
+      expect(dueLabel(5), 'In 5 days');
+      expect(activitiesLeftLabel(1), '1 activity left');
+      expect(activitiesLeftLabel(3), '3 activities left');
+    });
   });
 
   group('greetingFor', () {
