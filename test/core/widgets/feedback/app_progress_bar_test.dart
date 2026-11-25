@@ -31,6 +31,10 @@ Finder get track => find
 Color colorOf(WidgetTester tester, Finder f) =>
     tester.widget<ColoredBox>(f).color;
 
+/// Fill of a separate segment pill.
+Color segmentColor(WidgetTester tester, Finder f) =>
+    (tester.widget<DecoratedBox>(f).decoration as BoxDecoration).color!;
+
 void main() {
   const colors = AppSemanticColors.light;
 
@@ -102,8 +106,39 @@ void main() {
         expect(rects[i].left - rects[i - 1].right, closeTo(4, 0.01));
         expect(rects[i].width, closeTo(rects[0].width, 0.01));
       }
-      expect(colorOf(tester, seg[3]), AppColors.sage500);
-      expect(colorOf(tester, seg[4]), AppColors.grey200);
+      expect(segmentColor(tester, seg[3]), AppColors.sage500);
+      expect(segmentColor(tester, seg[4]), AppColors.grey200);
+    });
+
+    testWidgets('separate pills: height, round ends, nothing in the gaps', (
+      tester,
+    ) async {
+      // The question counter of 15: 5 pills, 6 tall, gap 6, Grey-300 track.
+      await pumpBar(
+        tester,
+        const AppProgressBar(
+          value: 0.4,
+          segments: 5,
+          segmentGap: 6,
+          height: 6,
+          trackColor: AppColors.grey300,
+        ),
+      );
+      final first = find.byKey(const ValueKey('progress-segment-0'));
+      expect(tester.getSize(first).height, 6);
+      final d = tester.widget<DecoratedBox>(first).decoration as BoxDecoration;
+      expect(d.borderRadius, const BorderRadius.all(Radius.circular(3)));
+      expect(
+        segmentColor(tester, find.byKey(const ValueKey('progress-segment-2'))),
+        AppColors.grey300,
+      );
+      // No track or clip behind the pills.
+      Finder inBar(Type t) => find.descendant(
+        of: find.byType(AppProgressBar),
+        matching: find.byType(t),
+      );
+      expect(inBar(ClipRRect), findsNothing);
+      expect(inBar(ColoredBox), findsNothing);
     });
 
     testWidgets('40% fills 2 of 5, 0 fills none, 100 fills all', (

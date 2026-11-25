@@ -15,8 +15,10 @@ enum AppProgressBarLabelPosition { left, right }
 /// With [segments] (the Home look uses 5) the bar is split into equal
 /// segments and the fill is discrete: a segment is filled once the value
 /// reaches into it (67% fills 4 of 5, as in the Home design). [segmentGap] is
-/// 0 on the screens, where the bar is one square-ended fill on the track;
-/// with a gap above 0 it draws separate segments.
+/// 0 on the Home cards, where the bar is one square-ended fill on the track;
+/// with a gap above 0 it draws separate rounded pills with nothing between
+/// them (the question counter of 15: 6 tall, gap 6). [height] is 8 unless a
+/// screen says otherwise.
 ///
 /// An optional [label] (e.g. "67%" or "171/300") sits [labelPosition] of the
 /// bar, 4dp away, in C3 Medium (screens; the DS sheet shows 16dp and Inter
@@ -37,6 +39,7 @@ class AppProgressBar extends StatelessWidget {
     this.labelColor,
     this.enabled = true,
     this.semanticLabel,
+    this.height = barHeight,
   }) : assert(segments == null || segments > 0);
 
   /// Height of the bar (DS and screens: 8).
@@ -61,6 +64,9 @@ class AppProgressBar extends StatelessWidget {
   final Color? labelColor;
   final bool enabled;
   final String? semanticLabel;
+
+  /// Bar height; separate segments are fully rounded pills of this height.
+  final double height;
 
   double get _value => value.isNaN ? 0 : value.clamp(0.0, 1.0);
 
@@ -111,8 +117,31 @@ class AppProgressBar extends StatelessWidget {
   Widget _bar() {
     final track = enabled ? trackColor : disabledTrack;
     final fill = enabled ? color : disabledTrack;
+    if (segments != null && segmentGap > 0) {
+      // Separate pills: no track behind them, so the gaps stay empty.
+      return SizedBox(
+        height: height,
+        child: Row(
+          children: [
+            for (var i = 0; i < segments!; i++) ...[
+              if (i > 0) SizedBox(width: segmentGap),
+              Expanded(
+                child: DecoratedBox(
+                  key: ValueKey('progress-segment-$i'),
+                  decoration: BoxDecoration(
+                    color: i < filledSegments ? fill : track,
+                    borderRadius: BorderRadius.all(Radius.circular(height / 2)),
+                  ),
+                  child: const SizedBox.expand(),
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
     return SizedBox(
-      height: barHeight,
+      height: height,
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(radius)),
         child: ColoredBox(
@@ -133,21 +162,6 @@ class AppProgressBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                )
-              : segmentGap > 0
-              ? Row(
-                  children: [
-                    for (var i = 0; i < segments!; i++) ...[
-                      if (i > 0) SizedBox(width: segmentGap),
-                      Expanded(
-                        child: ColoredBox(
-                          key: ValueKey('progress-segment-$i'),
-                          color: i < filledSegments ? fill : track,
-                          child: const SizedBox.expand(),
-                        ),
-                      ),
-                    ],
-                  ],
                 )
               : Align(
                   alignment: Alignment.centerLeft,
