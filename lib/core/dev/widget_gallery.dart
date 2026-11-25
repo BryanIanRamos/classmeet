@@ -260,6 +260,28 @@ class AppButtonMatrix extends StatelessWidget {
               ],
             ),
           ),
+        const SizedBox(height: AppSpacing.md),
+        const Text('disabled looks (14)', style: AppTypography.s2),
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.sm),
+          child: Row(
+            children: [
+              for (final (look, label) in const [
+                (AppButtonDisabledLook.muted, 'Muted'),
+                (AppButtonDisabledLook.toned, 'Reward claimed'),
+                (AppButtonDisabledLook.light, 'Complete 7 days to unlock'),
+              ]) ...[
+                AppButton(
+                  label: label,
+                  onPressed: null,
+                  size: AppButtonSize.medium,
+                  disabledLook: look,
+                ),
+                const SizedBox(width: AppSpacing.md),
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }

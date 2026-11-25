@@ -352,6 +352,41 @@ void main() {
       expect(style.backgroundColor!.resolve({}), AppColors.sage500);
     });
 
+    test('sky is Sky-900 so white passes contrast (14 "Answer survey")', () {
+      final style = styleOf(AppButtonStyle.filled, AppButtonTone.sky);
+      expect(style.backgroundColor!.resolve({}), AppColors.sky900);
+      expect(
+        style.backgroundColor!.resolve({WidgetState.pressed}),
+        AppColors.sky900,
+      );
+    });
+
+    test('disabled looks: muted, toned (claimed) and light (locked)', () {
+      ButtonStyle off(AppButtonDisabledLook look) => AppButton(
+        label: 'Off',
+        onPressed: null,
+        disabledLook: look,
+      ).buttonStyle(colors);
+      const disabled = {WidgetState.disabled};
+      final muted = off(AppButtonDisabledLook.muted);
+      expect(muted.backgroundColor!.resolve(disabled), AppColors.grey200);
+      expect(muted.foregroundColor!.resolve(disabled), colors.textGrey);
+      final toned = off(AppButtonDisabledLook.toned);
+      expect(toned.backgroundColor!.resolve(disabled), AppColors.sage500);
+      expect(toned.foregroundColor!.resolve(disabled), AppColors.white);
+      final light = off(AppButtonDisabledLook.light);
+      expect(light.backgroundColor!.resolve(disabled), AppColors.grey50);
+      expect(light.foregroundColor!.resolve(disabled), colors.textGrey);
+      // Outline buttons ignore the look.
+      final outline = const AppButton(
+        label: 'Off',
+        onPressed: null,
+        style: AppButtonStyle.outline,
+        disabledLook: AppButtonDisabledLook.toned,
+      ).buttonStyle(colors);
+      expect(outline.foregroundColor!.resolve(disabled), colors.textGrey);
+    });
+
     test('disabled looks the same in every tone', () {
       for (final tone in AppButtonTone.values) {
         final style = AppButton(

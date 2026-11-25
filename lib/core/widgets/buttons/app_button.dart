@@ -64,7 +64,9 @@ enum AppButtonStyle { filled, outline, clear }
 /// Plume (95 "Continue with Carsu", 92, 119, 122), Talon (13.1 "Join") and
 /// Sky (14). Each tone applies the DS state pattern with its own ramp. The
 /// palette has no Plume-700/900, so a Plume button keeps Plume-500 when
-/// hovered or pressed (INC-12).
+/// hovered or pressed (INC-12). The one Sky button (14 "Answer survey") is
+/// Sky-900, so white text passes contrast (Sky-500 would not); nothing is
+/// darker, so it keeps Sky-900 when hovered or pressed.
 enum AppButtonTone {
   sage(
     AppColors.sage500,
@@ -91,8 +93,8 @@ enum AppButtonTone {
     AppColors.talon100,
   ),
   sky(
-    AppColors.sky500,
-    AppColors.sky700,
+    AppColors.sky900,
+    AppColors.sky900,
     AppColors.sky900,
     AppColors.sky300,
     AppColors.sky50,
@@ -123,6 +125,21 @@ enum AppButtonTone {
   final Color pressedTint;
 }
 
+/// How a disabled filled button looks. The DS shows [muted]; Talon credits
+/// (14) keeps a claimed reward in its colours ([toned], "Reward claimed") and
+/// shows a locked quest on Grey-50 ([light], "Complete 7 days to unlock").
+/// Outline and clear buttons always use the muted look.
+enum AppButtonDisabledLook {
+  /// Grey-200 fill, grey label (DS).
+  muted,
+
+  /// The tone's own fill and white label: done, not unavailable.
+  toned,
+
+  /// Grey-50 fill, grey label.
+  light,
+}
+
 /// The ClassMeet button: [AppButtonSize] × [AppButtonStyle], with a label and
 /// optional leading and trailing icons, or icon-only with [AppButton.icon].
 ///
@@ -149,6 +166,7 @@ class AppButton extends StatelessWidget {
     this.trailingIcon,
     this.expand = false,
     this.statesController,
+    this.disabledLook = AppButtonDisabledLook.muted,
   }) : icon = null,
        semanticLabel = null;
 
@@ -162,6 +180,7 @@ class AppButton extends StatelessWidget {
     this.style = AppButtonStyle.filled,
     this.tone = AppButtonTone.sage,
     this.statesController,
+    this.disabledLook = AppButtonDisabledLook.muted,
   }) : label = null,
        leadingIcon = null,
        trailingIcon = null,
@@ -191,6 +210,9 @@ class AppButton extends StatelessWidget {
   final WidgetStatesController? statesController;
 
   final AppButtonTone tone;
+
+  /// The disabled look of a filled button (a null [onPressed]).
+  final AppButtonDisabledLook disabledLook;
 
   bool get _iconOnly => icon != null;
 
@@ -246,7 +268,11 @@ class AppButton extends StatelessWidget {
     final pressed = states.contains(WidgetState.pressed);
     final hovered = states.contains(WidgetState.hovered);
     return switch (style) {
-      AppButtonStyle.filled when disabled => AppColors.grey200,
+      AppButtonStyle.filled when disabled => switch (disabledLook) {
+        AppButtonDisabledLook.muted => AppColors.grey200,
+        AppButtonDisabledLook.toned => tone.base,
+        AppButtonDisabledLook.light => AppColors.grey50,
+      },
       AppButtonStyle.filled when pressed => tone.pressed,
       AppButtonStyle.filled when hovered => tone.hovered,
       AppButtonStyle.filled => tone.base,
@@ -258,7 +284,12 @@ class AppButton extends StatelessWidget {
   }
 
   Color _foreground(Set<WidgetState> states, AppSemanticColors colors) {
-    if (states.contains(WidgetState.disabled)) return colors.textGrey;
+    if (states.contains(WidgetState.disabled)) {
+      final toned =
+          style == AppButtonStyle.filled &&
+          disabledLook == AppButtonDisabledLook.toned;
+      return toned ? colors.textPrimaryWhite : colors.textGrey;
+    }
     if (style == AppButtonStyle.filled) return colors.textPrimaryWhite;
     return tone == AppButtonTone.sage ? colors.textSecondaryAccent : tone.base;
   }
