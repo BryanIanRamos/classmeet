@@ -46,6 +46,14 @@ void main() {
     );
   });
 
+  testWidgets('AppAnswerOption matrix', (tester) async {
+    await pump(tester, const AppAnswerOptionMatrix());
+    await expectLater(
+      find.byType(AppAnswerOptionMatrix),
+      matchesGoldenFile('selection_answer_option.png'),
+    );
+  });
+
   testWidgets('SelectableCard matrix', (tester) async {
     await pump(tester, const SelectableCardMatrix());
     await expectLater(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../widgets/selection/app_answer_option.dart';
 import '../../widgets/selection/app_checkbox.dart';
 import '../../widgets/selection/app_radio.dart';
 import '../../widgets/selection/app_toggle.dart';
@@ -324,6 +325,65 @@ class SelectableCardMatrix extends StatelessWidget {
   }
 }
 
+/// [AppAnswerOption] in each state (15, 124-126), a static one (after
+/// checking) and a long answer that wraps.
+class AppAnswerOptionMatrix extends StatelessWidget {
+  const AppAnswerOptionMatrix({super.key});
+
+  static const _width = 370.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Answer option', style: AppTypography.h5),
+        SizedBox(height: AppSpacing.md),
+        SizedBox(
+          width: _width,
+          child: Column(
+            spacing: AppSpacing.md,
+            children: [
+              AppAnswerOption(
+                label: 'A. RA 10173 · Data Privacy Act of 2012',
+                state: AppAnswerOptionState.selected,
+                onTap: _noop,
+              ),
+              AppAnswerOption(
+                label: 'B. RA 10175 · Cybercrime Prevention Act',
+                state: AppAnswerOptionState.idle,
+                onTap: _noop,
+              ),
+              AppAnswerOption(
+                label: 'Central Processing Unit',
+                state: AppAnswerOptionState.correct,
+                onTap: null,
+              ),
+              AppAnswerOption(
+                label: 'Monitor',
+                state: AppAnswerOptionState.wrong,
+                onTap: null,
+              ),
+              AppAnswerOption(
+                label: 'Keyboard (static after checking)',
+                state: AppAnswerOptionState.idle,
+                onTap: null,
+              ),
+              AppAnswerOption(
+                label:
+                    'A long answer that needs a second line to fit on a '
+                    'narrow phone',
+                state: AppAnswerOptionState.idle,
+                onTap: _noop,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// All selection matrices, stacked; used by the golden and `/dev/widgets`.
 class SelectionGallery extends StatelessWidget {
   const SelectionGallery({super.key});
@@ -340,6 +400,8 @@ class SelectionGallery extends StatelessWidget {
         AppToggleMatrix(),
         SizedBox(height: AppSpacing.xl),
         SelectableCardMatrix(),
+        SizedBox(height: AppSpacing.xl),
+        AppAnswerOptionMatrix(),
       ],
     );
   }
