@@ -1,5 +1,6 @@
 import '../../models/profile.dart';
 import '../../models/search_result.dart';
+import 'profile_samples.dart';
 
 /// Frame 12.
 const sampleRecentSearches = [
@@ -38,11 +39,13 @@ const samplePeopleResults = [
     name: 'Arabela Matias',
     programLabel: 'BSIT - II',
     schoolName: 'Caraga State University',
+    avatarAsset: sampleOwlAvatar,
   ),
   PersonSummary(
     id: 'person-bryan',
     name: 'Bryan Ramos',
     programLabel: 'BSIT - IV',
+    schoolName: 'Caraga State University',
   ),
   PersonSummary(
     id: 'person-joshua',

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/assets/app_icons.dart';
-import '../../../../core/assets/app_images.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -16,7 +15,8 @@ import '../../../../data/models/profile.dart';
 /// White under the status bar, 48 + 4 tall with a Grey-100 bottom line
 /// (spec 8: 52 with 4 bottom padding). Until the profile loads (or when it
 /// fails) the greeting has no name and there is no subtitle. A profile
-/// without its own picture shows the default owl avatar, as in the design.
+/// without a picture shows its initial, as people do on Search (12); the
+/// sample student has the owl picture of frame 8.
 class HomeHeader extends StatelessWidget {
   const HomeHeader({
     super.key,
@@ -52,14 +52,19 @@ class HomeHeader extends StatelessWidget {
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: onAvatarTap,
-                child: avatarPath == null
-                    ? AppAvatar.asset(AppImages.avatar)
-                    : AppAvatar.image(
-                        imageProvider: ResizeImage(
-                          AssetImage(avatarPath),
-                          width: _avatarCacheWidth,
-                        ),
-                      ),
+                child: switch ((user, avatarPath)) {
+                  // Still loading, or failed: a neutral person icon.
+                  (null, _) => const AppAvatar.icon(icon: AppIcons.user),
+                  (final user?, null) => AppAvatar.letter(
+                    letter: user.username,
+                  ),
+                  (_, final path?) => AppAvatar.image(
+                    imageProvider: ResizeImage(
+                      AssetImage(path),
+                      width: _avatarCacheWidth,
+                    ),
+                  ),
+                },
               ),
             ),
             title: user == null ? '$greeting!' : '$greeting, ${user.username}!',

@@ -1,5 +1,7 @@
+import 'package:classmeet/core/assets/app_images.dart';
 import 'package:classmeet/data/fakes/fake_config.dart';
 import 'package:classmeet/data/fakes/fake_profile_repository.dart';
+import 'package:classmeet/data/fakes/samples/profile_samples.dart';
 import 'package:classmeet/data/models/leaderboard.dart';
 import 'package:classmeet/data/models/onboarding_prefs.dart';
 import 'package:classmeet/data/repositories/repository_exception.dart';
@@ -11,6 +13,10 @@ const _error = FakeConfig(scenario: FakeScenario.error, latency: Duration.zero);
 void main() {
   late FakeProfileRepository repo;
   setUp(() => repo = FakeProfileRepository(FakeConfig.instant));
+
+  test('the sample owl picture is a registered image', () {
+    expect(AppImages.all.map((i) => i.path), contains(sampleOwlAvatar));
+  });
 
   test('fetchProfile returns the design student', () async {
     final p = await repo.fetchProfile();
