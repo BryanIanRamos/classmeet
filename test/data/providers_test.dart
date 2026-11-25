@@ -1,3 +1,4 @@
+import 'package:classmeet/core/clock.dart';
 import 'package:classmeet/data/fakes/fake_config.dart';
 import 'package:classmeet/data/models/attempt.dart';
 import 'package:classmeet/data/models/create.dart';
@@ -40,6 +41,21 @@ void main() {
           .remaining,
       3,
     );
+  });
+
+  test('fakes take their sample times from clockProvider', () async {
+    final now = DateTime(2026, 11, 24, 19, 30);
+    final c = ProviderContainer(
+      overrides: [
+        fakeConfigProvider.overrideWithValue(FakeConfig.instant),
+        clockProvider.overrideWithValue(() => now),
+      ],
+    );
+    addTearDown(c.dispose);
+    final goals = await c.read(studyPlanRepositoryProvider).fetchUpcoming();
+    expect(goals.first.dueAt, DateTime(2026, 11, 29));
+    final quests = await c.read(questRepositoryProvider).fetchQuests();
+    expect(quests.first.resetsAt, DateTime(2026, 11, 25));
   });
 
   test('one repository instance per container, so writes persist', () async {

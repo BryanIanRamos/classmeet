@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/clock.dart';
 import '../core/env.dart';
 import 'fakes/fake_ai_repository.dart';
 import 'fakes/fake_attempt_repository.dart';
@@ -53,36 +54,36 @@ final fakeConfigProvider = Provider<FakeConfig>((ref) => FakeConfig.fromEnv());
 
 // Home, profile and onboarding.
 final authRepositoryProvider = Provider<AuthRepository>(
-  (ref) => FakeAuthRepository(_fakeConfig(ref)),
+  (ref) => FakeAuthRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final profileRepositoryProvider = Provider<ProfileRepository>(
-  (ref) => FakeProfileRepository(_fakeConfig(ref)),
+  (ref) => FakeProfileRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final catalogRepositoryProvider = Provider<CatalogRepository>(
-  (ref) => FakeCatalogRepository(_fakeConfig(ref)),
+  (ref) => FakeCatalogRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final walletRepositoryProvider = Provider<WalletRepository>(
-  (ref) => FakeWalletRepository(_fakeConfig(ref)),
+  (ref) => FakeWalletRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final questRepositoryProvider = Provider<QuestRepository>(
-  (ref) => FakeQuestRepository(_fakeConfig(ref)),
+  (ref) => FakeQuestRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final notificationRepositoryProvider = Provider<NotificationRepository>(
-  (ref) => FakeNotificationRepository(_fakeConfig(ref)),
+  (ref) => FakeNotificationRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final searchRepositoryProvider = Provider<SearchRepository>(
-  (ref) => FakeSearchRepository(_fakeConfig(ref)),
+  (ref) => FakeSearchRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final classRepositoryProvider = Provider<ClassRepository>(
-  (ref) => FakeClassRepository(_fakeConfig(ref)),
+  (ref) => FakeClassRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final studyPlanRepositoryProvider = Provider<StudyPlanRepository>(
-  (ref) => FakeStudyPlanRepository(_fakeConfig(ref)),
+  (ref) => FakeStudyPlanRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 
 // Study. The AI fake spends talons from the shared wallet.
 final materialRepositoryProvider = Provider<MaterialRepository>(
-  (ref) => FakeMaterialRepository(_fakeConfig(ref)),
+  (ref) => FakeMaterialRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final readerRepositoryProvider = Provider<ReaderRepository>(
   (ref) => FakeReaderRepository(_fakeConfig(ref)),
@@ -111,13 +112,14 @@ final quizRepositoryProvider = Provider<QuizRepository>(
 final attemptRepositoryProvider = Provider<AttemptRepository>(
   (ref) => FakeAttemptRepository(
     _fakeConfig(ref),
+    clock: _clock(ref),
     quizzes: ref.watch(_fakeQuizzes),
     mistakes: ref.watch(_fakeMistakes),
     wallet: ref.watch(walletRepositoryProvider),
   ),
 );
 final commentRepositoryProvider = Provider<CommentRepository>(
-  (ref) => FakeCommentRepository(_fakeConfig(ref)),
+  (ref) => FakeCommentRepository(_fakeConfig(ref), clock: _clock(ref)),
 );
 final leaderboardRepositoryProvider = Provider<LeaderboardRepository>(
   (ref) => FakeLeaderboardRepository(_fakeConfig(ref)),
@@ -132,6 +134,11 @@ final createRepositoryProvider = Provider<CreateRepository>(
     wallet: ref.watch(walletRepositoryProvider),
   ),
 );
+
+/// The app clock for a fake repository, so sample times ("2hrs ago",
+/// "In 5 days", "Resets at midnight") follow [clockProvider], which tests and
+/// renders pin.
+DateTime Function() _clock(Ref ref) => ref.watch(clockProvider);
 
 /// The fake config for a fake repository. Refuses `DATA_SOURCE=remote`:
 /// there is no backend yet (D-18).
