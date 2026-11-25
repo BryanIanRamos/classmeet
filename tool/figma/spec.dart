@@ -286,10 +286,17 @@ String _fillsPart(Json node, TokenNames tokens, {String prefix = ''}) {
   return '${prefix}fill ${fills.join(' + ')}';
 }
 
+/// The stroke, with ` (in layout)` when Figma lays the stroke out inside
+/// the frame's padding box (`strokesIncludedInLayout`): the content then
+/// sits stroke + padding from the edge, and the frame is 2 × stroke larger
+/// than padding + content.
 String _stroke(Json node, TokenNames tokens) {
   final strokes = _paints(node['strokes'], tokens);
   if (strokes.isEmpty) return '';
-  return 'stroke ${_n(node['strokeWeight'] as num? ?? 1)} ${strokes.join(' + ')}';
+  final inLayout =
+      node['strokesIncludedInLayout'] == true && node['layoutMode'] != null;
+  return 'stroke ${_n(node['strokeWeight'] as num? ?? 1)} ${strokes.join(' + ')}'
+      '${inLayout ? ' (in layout)' : ''}';
 }
 
 List<String> _paints(Object? raw, TokenNames tokens) {
