@@ -51,6 +51,10 @@ final _boundary = GlobalKey(debugLabel: 'render boundary');
 /// animations, such as loaders. A missing image file fails the render too,
 /// unless [allowMissingImages] is set (the widget gallery shows the
 /// illustration placeholder on purpose).
+///
+/// [prepare] drives the screen into the frame's state before the capture
+/// (type a query, pick an answer, open a sheet). It runs once per size, after
+/// the first pump; the full-page re-pump keeps that state.
 Future<void> renderScreen(
   WidgetTester tester,
   String name,
@@ -59,6 +63,7 @@ Future<void> renderScreen(
   bool fullPage = false,
   bool settle = true,
   bool allowMissingImages = false,
+  Future<void> Function(WidgetTester tester)? prepare,
 }) async {
   addTearDown(tester.view.reset);
   for (final size in renderSizes) {
@@ -72,6 +77,15 @@ Future<void> renderScreen(
       settle: settle,
       allowMissingImages: allowMissingImages,
     );
+    if (prepare != null) {
+      await prepare(tester);
+      await _loadImages(tester, allowMissing: allowMissingImages);
+      if (settle) {
+        await tester.pumpAndSettle();
+      } else {
+        await tester.pump(const Duration(milliseconds: 500));
+      }
+    }
     if (fullPage) {
       final extra = _maxScrollExtent(tester);
       if (extra > 0) {
