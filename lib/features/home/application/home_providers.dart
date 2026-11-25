@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/models/material.dart';
 import '../../../data/models/profile.dart';
+import '../../../data/models/quest.dart';
 import '../../../data/models/streak.dart';
 import '../../../data/models/study_plan.dart';
 import '../../../data/models/wallet.dart';
@@ -33,6 +34,17 @@ final dailyProgressProvider = FutureProvider<DailyProgress>(
 /// hero card's "Continue studying" target (8).
 final inProgressMaterialsProvider = FutureProvider<List<StudyMaterial>>(
   (ref) => ref.watch(materialRepositoryProvider).fetchInProgress(),
+);
+
+/// "Coming up next" (8): upcoming deadlines, soonest first.
+final upcomingGoalsProvider = FutureProvider<List<PlanGoal>>(
+  (ref) => ref.watch(studyPlanRepositoryProvider).fetchUpcoming(),
+);
+
+/// Talon-earning quests: "Earn more talon credits" (8) and the daily quests
+/// of Talon credits (14). Invalidate it after claiming or completing one.
+final questsProvider = FutureProvider<List<Quest>>(
+  (ref) => ref.watch(questRepositoryProvider).fetchQuests(),
 );
 
 /// What the top of Home needs before it can show anything: the hero card
