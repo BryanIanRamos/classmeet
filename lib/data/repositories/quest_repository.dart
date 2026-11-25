@@ -14,6 +14,12 @@ abstract interface class QuestRepository {
   /// Today's general-knowledge questions (15).
   Future<List<Question>> fetchDailyQuiz();
 
+  /// Records today's daily quiz as finished (15) and returns its quest: an
+  /// available quest counts one more day and becomes completed, so its
+  /// reward can be claimed. A quest already completed or claimed today comes
+  /// back unchanged.
+  Future<Quest> finishDailyQuiz();
+
   Future<Survey> fetchWeeklySurvey();
 
   /// [answers] maps a question id to the chosen option index.

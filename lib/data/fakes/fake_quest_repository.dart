@@ -11,9 +11,14 @@ import 'samples/quest_samples.dart';
 /// claiming a completed quest marks it claimed. Quest times come from the
 /// clock (resets at midnight, survey open until Sunday).
 class FakeQuestRepository implements QuestRepository {
-  FakeQuestRepository(this._config, {DateTime Function()? clock})
-    : _clock = clock ?? DateTime.now {
-    _quests = _config.isEmpty ? [] : questSamples(_clock());
+  /// [quests] replaces the frame-14 samples, for tests that need another
+  /// starting state (e.g. today's quiz not done yet).
+  FakeQuestRepository(
+    this._config, {
+    DateTime Function()? clock,
+    List<Quest>? quests,
+  }) : _clock = clock ?? DateTime.now {
+    _quests = _config.isEmpty ? [] : List.of(quests ?? questSamples(_clock()));
   }
 
   final FakeConfig _config;
@@ -41,6 +46,17 @@ class FakeQuestRepository implements QuestRepository {
   @override
   Future<List<Question>> fetchDailyQuiz() =>
       _config.answerList('fetchDailyQuiz', () => List.of(dailyQuizQuestions));
+
+  @override
+  Future<Quest> finishDailyQuiz() => _config.answer('finishDailyQuiz', () {
+    final index = _indexOf(dailyQuizQuestId);
+    final quest = _quests[index];
+    if (quest.status != QuestStatus.available) return quest;
+    return _quests[index] = quest.copyWith(
+      done: quest.total > quest.done ? quest.done + 1 : quest.done,
+      status: QuestStatus.completed,
+    );
+  });
 
   @override
   Future<Survey> fetchWeeklySurvey() => _config.answer(

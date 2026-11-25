@@ -33,6 +33,35 @@ void main() {
     expect(survey.availableUntil, DateTime(2026, 11, 29, 23, 59, 59));
   });
 
+  test('finishDailyQuiz leaves the claimed sample quiz unchanged', () async {
+    final q = await repo.finishDailyQuiz();
+    expect((q.done, q.status), (6, QuestStatus.claimed));
+  });
+
+  test('finishDailyQuiz completes an open quiz, then claim works', () async {
+    final open = FakeQuestRepository(
+      FakeConfig.instant,
+      clock: () => now,
+      quests: const [
+        Quest(
+          id: 'daily-gk-quiz',
+          title: 'Daily General Knowledge Quiz',
+          kind: QuestKind.daily,
+          rewardTalons: 5,
+          done: 5,
+          total: 7,
+        ),
+      ],
+    );
+    final done = await open.finishDailyQuiz();
+    expect((done.done, done.status), (6, QuestStatus.completed));
+    final again = await open.finishDailyQuiz();
+    expect(again.done, 6, reason: 'one day counts once');
+    final claimed = await open.claimQuest('daily-gk-quiz');
+    expect(claimed.status, QuestStatus.claimed);
+    expect((await open.fetchQuests()).single.status, QuestStatus.claimed);
+  });
+
   test('survey runs through submit then claim', () async {
     final s = await repo.fetchWeeklySurvey();
     expect(s.title, "How's your study week going?");
@@ -127,6 +156,7 @@ void main() {
     expect(r.fetchQuests(), throwsA(isA<RepositoryException>()));
     expect(r.claimQuest('daily-gk-quiz'), throwsA(isA<RepositoryException>()));
     expect(r.fetchDailyQuiz(), throwsA(isA<RepositoryException>()));
+    expect(r.finishDailyQuiz(), throwsA(isA<RepositoryException>()));
     expect(r.fetchWeeklySurvey(), throwsA(isA<RepositoryException>()));
     expect(
       r.submitSurvey('weekly-survey', {}),
