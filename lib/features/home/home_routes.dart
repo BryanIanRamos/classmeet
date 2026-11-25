@@ -35,6 +35,15 @@ final homeBranch = StatefulShellBranch(
           path: 'join',
           parentNavigatorKey: rootNavigatorKey,
           builder: (_, _) => const JoinClassScreen(),
+          routes: [
+            // QR scanning arrives with mobile_scanner in task 10.4.
+            comingSoonRoute(
+              'scan',
+              title: 'Scan a class QR code',
+              gapId: 'GAP-25',
+              parentNavigatorKey: rootNavigatorKey,
+            ),
+          ],
         ),
         GoRoute(
           path: 'talons',

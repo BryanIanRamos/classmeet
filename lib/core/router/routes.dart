@@ -30,6 +30,7 @@ abstract final class Routes {
   static const notifications = '/home/notifications';
   static const search = '/home/search';
   static const joinClass = '/home/join';
+  static const joinClassScan = '/home/join/scan';
   static const talonCredits = '/home/talons';
   static const rewardsHistory = '/home/talons/history';
   static const dailyQuiz = '/home/daily-quiz';

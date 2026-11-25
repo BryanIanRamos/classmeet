@@ -73,6 +73,7 @@ final allPaths = [
   Routes.notifications,
   Routes.search,
   Routes.joinClass,
+  Routes.joinClassScan,
   Routes.talonCredits,
   Routes.rewardsHistory,
   Routes.dailyQuiz,
