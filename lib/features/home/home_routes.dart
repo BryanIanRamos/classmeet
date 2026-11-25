@@ -27,7 +27,9 @@ final homeBranch = StatefulShellBranch(
         GoRoute(
           path: 'search',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const SearchScreen(),
+          // `?q=` pre-fills the query.
+          builder: (_, state) =>
+              SearchScreen(initialQuery: state.uri.queryParameters['q']),
         ),
         GoRoute(
           path: 'join',
