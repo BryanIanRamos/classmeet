@@ -14,7 +14,9 @@ import '../../theme/app_semantic_colors.dart';
 /// checks it), so it is drawn as is: fading it again made the doodle all but
 /// invisible (a darkest pixel of 254 against the frames' 243). Set
 /// [showPattern] to false for a plain white surface. The image is decoded no
-/// wider than the screen needs (`cacheWidth`).
+/// wider than the screen needs (`cacheWidth`). A box with no width draws no
+/// pattern: Android lays out the first frame in a 0-wide window, and a 0
+/// `cacheWidth` fails `Image`'s assertion.
 class ScreenBackground extends StatelessWidget {
   const ScreenBackground({
     super.key,
@@ -60,6 +62,9 @@ class ScreenBackground extends StatelessWidget {
               child: ExcludeSemantics(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
+                    if (constraints.maxWidth <= 0) {
+                      return const SizedBox.shrink();
+                    }
                     final width = constraints.hasBoundedWidth
                         ? (constraints.maxWidth * dpr).ceil()
                         : null;

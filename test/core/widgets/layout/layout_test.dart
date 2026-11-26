@@ -68,6 +68,32 @@ void main() {
       expect(maxAlpha, ScreenBackground.maxPatternAlpha);
     });
 
+    testWidgets('decodes the pattern at the screen width in pixels', (
+      tester,
+    ) async {
+      await pump(tester, const Scaffold(body: ScreenBackground()));
+      final image = tester.widget<Image>(find.byKey(patternKey));
+      final dpr = tester.view.devicePixelRatio;
+      expect(image.image, isA<ResizeImage>());
+      expect((image.image as ResizeImage).width, (428 * dpr).ceil());
+    });
+
+    testWidgets('a 0-wide box (Android\'s first frame) draws no pattern', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        const Scaffold(
+          body: Align(
+            alignment: Alignment.topLeft,
+            child: SizedBox(width: 0, height: 100, child: ScreenBackground()),
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(patternKey), findsNothing);
+    });
+
     testWidgets('pattern can be disabled', (tester) async {
       await pump(
         tester,
