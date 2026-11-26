@@ -3,17 +3,11 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/models/material.dart';
-import '../../../data/models/profile.dart';
 import '../../../data/models/quest.dart';
 import '../../../data/models/streak.dart';
 import '../../../data/models/study_plan.dart';
 import '../../../data/models/wallet.dart';
 import '../../../data/providers.dart';
-
-/// The signed-in user: the Home greeting, avatar and "BSIT 2A · CSU".
-final profileProvider = FutureProvider<UserProfile>(
-  (ref) => ref.watch(profileRepositoryProvider).fetchProfile(),
-);
 
 /// Talon, study-point and XP balances (Home talon card, 14, 122).
 final walletProvider = FutureProvider<Wallet>(
@@ -64,14 +58,6 @@ final homeSummaryProvider = FutureProvider<HomeSummary>((ref) async {
   ).wait;
   return (today: today, streak: streak, wallet: wallet);
 });
-
-/// "Good morning" before noon, "Good afternoon" until 6 PM, then
-/// "Good evening" (the design shows the evening one).
-String greetingFor(DateTime time) => switch (time.hour) {
-  < 12 => 'Good morning',
-  < 18 => 'Good afternoon',
-  _ => 'Good evening',
-};
 
 /// The noun for [count]: [singular] for 1, else [plural] (default: an "s"
 /// added), as in "1 day" and "6 days".

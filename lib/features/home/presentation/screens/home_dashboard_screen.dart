@@ -11,10 +11,11 @@ import '../../../../core/widgets/feedback/app_loader.dart';
 import '../../../../core/widgets/feedback/error_state.dart';
 import '../../../../core/widgets/layout/screen_background.dart';
 import '../../../../data/models/quest.dart';
+import '../../../profile/application/profile_providers.dart';
+import '../../../profile/presentation/widgets/profile_header.dart';
 import '../../application/home_providers.dart';
 import '../widgets/daily_progress_card.dart';
 import '../widgets/home_goal_card.dart';
-import '../widgets/home_header.dart';
 import '../widgets/home_material_card.dart';
 import '../widgets/home_quest_card.dart';
 import '../widgets/home_stat_card.dart';
@@ -84,7 +85,6 @@ class HomeDashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final now = ref.watch(clockProvider)();
-    final profile = ref.watch(profileProvider);
     final summary = ref.watch(homeSummaryProvider);
     final goals = ref.watch(upcomingGoalsProvider).value ?? const [];
     // Also the "Continue studying" target.
@@ -98,12 +98,7 @@ class HomeDashboardScreen extends ConsumerWidget {
       backgroundColor: context.colors.surfaceWhite,
       body: Column(
         children: [
-          HomeHeader(
-            greeting: greetingFor(now),
-            profile: profile.value,
-            onAvatarTap: () => context.push(Routes.profile),
-            onNotificationsTap: () => context.push(Routes.notifications),
-          ),
+          const ProfileHeader(),
           Expanded(
             child: ScreenBackground(
               child: switch (summary) {

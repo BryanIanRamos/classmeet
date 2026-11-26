@@ -7,6 +7,7 @@ import 'package:classmeet/features/home/presentation/screens/home_dashboard_scre
 import 'package:classmeet/features/home/presentation/screens/notifications_screen.dart';
 import 'package:classmeet/features/home/presentation/screens/talon_credits_screen.dart';
 import 'package:classmeet/features/home/presentation/widgets/home_stat_card.dart';
+import 'package:classmeet/features/profile/application/profile_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
