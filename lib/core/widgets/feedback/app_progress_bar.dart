@@ -18,7 +18,8 @@ enum AppProgressBarLabelPosition { left, right }
 /// 0 on the Home cards, where the bar is one square-ended fill on the track;
 /// with a gap above 0 it draws separate rounded pills with nothing between
 /// them (the question counter of 15: 6 tall, gap 6). [height] is 8 unless a
-/// screen says otherwise.
+/// screen says otherwise. A continuous fill has a rounded end; [flatFill]
+/// squares it off, as the Talon credits bars draw it (14).
 ///
 /// An optional [label] (e.g. "67%" or "171/300") sits [labelPosition] of the
 /// bar, 4dp away, in C3 Medium (screens; the DS sheet shows 16dp and Inter
@@ -40,6 +41,7 @@ class AppProgressBar extends StatelessWidget {
     this.enabled = true,
     this.semanticLabel,
     this.height = barHeight,
+    this.flatFill = false,
   }) : assert(segments == null || segments > 0);
 
   /// Height of the bar (DS and screens: 8).
@@ -67,6 +69,10 @@ class AppProgressBar extends StatelessWidget {
 
   /// Bar height; separate segments are fully rounded pills of this height.
   final double height;
+
+  /// End a continuous fill square instead of round (the track keeps its
+  /// round ends).
+  final bool flatFill;
 
   double get _value => value.isNaN ? 0 : value.clamp(0.0, 1.0);
 
@@ -156,9 +162,9 @@ class AppProgressBar extends StatelessWidget {
                       key: const ValueKey('progress-fill'),
                       decoration: BoxDecoration(
                         color: fill,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(radius),
-                        ),
+                        borderRadius: flatFill
+                            ? null
+                            : const BorderRadius.all(Radius.circular(radius)),
                       ),
                     ),
                   ),

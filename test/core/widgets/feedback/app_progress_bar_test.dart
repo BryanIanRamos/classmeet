@@ -110,6 +110,27 @@ void main() {
       expect(segmentColor(tester, seg[4]), AppColors.grey200);
     });
 
+    testWidgets('flatFill squares the end of a continuous fill', (
+      tester,
+    ) async {
+      BoxDecoration fill() =>
+          tester
+                  .widget<DecoratedBox>(
+                    find.byKey(const ValueKey('progress-fill')),
+                  )
+                  .decoration
+              as BoxDecoration;
+      await pumpBar(tester, const AppProgressBar(value: 0.57));
+      expect(fill().borderRadius, isNotNull);
+      await pumpBar(tester, const AppProgressBar(value: 0.57, flatFill: true));
+      expect(fill().borderRadius, isNull);
+      final track = tester.getSize(find.byType(ClipRRect)).width;
+      expect(
+        tester.getSize(find.byKey(const ValueKey('progress-fill'))).width,
+        closeTo(track * 0.57, 0.01),
+      );
+    });
+
     testWidgets('separate pills: height, round ends, nothing in the gaps', (
       tester,
     ) async {
