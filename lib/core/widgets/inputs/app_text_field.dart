@@ -93,6 +93,8 @@ class AppTextField extends StatefulWidget {
     this.textInputAction,
     this.textCapitalization = TextCapitalization.none,
     this.inputFormatters,
+    this.autocorrect = true,
+    this.enableSuggestions = true,
     this.onChanged,
     this.onSubmitted,
     this.statesController,
@@ -126,6 +128,8 @@ class AppTextField extends StatefulWidget {
        keyboardType = TextInputType.visiblePassword,
        textCapitalization = TextCapitalization.none,
        inputFormatters = null,
+       autocorrect = false,
+       enableSuggestions = false,
        _password = true,
        _search = false;
 
@@ -157,6 +161,8 @@ class AppTextField extends StatefulWidget {
        textInputAction = TextInputAction.search,
        textCapitalization = TextCapitalization.none,
        inputFormatters = null,
+       autocorrect = true,
+       enableSuggestions = true,
        _password = false,
        _search = true;
 
@@ -207,6 +213,11 @@ class AppTextField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final TextCapitalization textCapitalization;
   final List<TextInputFormatter>? inputFormatters;
+
+  /// Keyboard autocorrect and word suggestions. Turn both off for codes and
+  /// usernames (e.g. a class code like ITE16-2026); passwords never use them.
+  final bool autocorrect;
+  final bool enableSuggestions;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
 
@@ -385,10 +396,13 @@ class _AppTextFieldState extends State<AppTextField> {
       textInputAction: widget.textInputAction,
       textCapitalization: widget.textCapitalization,
       inputFormatters: widget.inputFormatters,
+      autocorrect: widget.autocorrect,
+      enableSuggestions: widget.enableSuggestions,
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,
       style: style.copyWith(color: palette.text),
-      cursorColor: AppColors.sage500,
+      // The caret follows a section accent (e.g. Talon on Join a class).
+      cursorColor: widget.accentColor ?? AppColors.sage500,
       cursorHeight: style.fontSize! * 1.25,
       decoration: InputDecoration(
         isCollapsed: true,

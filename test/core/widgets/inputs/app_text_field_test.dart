@@ -301,4 +301,41 @@ void main() {
       });
     }
   });
+
+  group('keyboard', () {
+    testWidgets('autocorrect and suggestions pass through; on by default', (
+      tester,
+    ) async {
+      await pumpField(tester, const AppTextField(placeholder: 'Text'));
+      var field = tester.widget<TextField>(find.byType(TextField));
+      expect((field.autocorrect, field.enableSuggestions), (true, true));
+
+      await pumpField(
+        tester,
+        const AppTextField(
+          placeholder: 'Code',
+          autocorrect: false,
+          enableSuggestions: false,
+        ),
+      );
+      field = tester.widget<TextField>(find.byType(TextField));
+      expect((field.autocorrect, field.enableSuggestions), (false, false));
+
+      await pumpField(tester, const AppTextField.password(placeholder: 'P'));
+      field = tester.widget<TextField>(find.byType(TextField));
+      expect((field.autocorrect, field.enableSuggestions), (false, false));
+    });
+
+    testWidgets('the caret follows the accent colour', (tester) async {
+      await pumpField(
+        tester,
+        const AppTextField(
+          placeholder: 'Code',
+          accentColor: AppColors.talon700,
+        ),
+      );
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.cursorColor, AppColors.talon700);
+    });
+  });
 }
