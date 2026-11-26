@@ -38,7 +38,7 @@ List<Quest> questSamples(DateTime now) => [
     id: streakQuestId,
     title: 'Study Streak Milestone I',
     kind: QuestKind.milestone,
-    rewardTalons: 10, // sample
+    rewardTalons: 5,
     done: 3,
     total: 7,
     status: QuestStatus.locked,
