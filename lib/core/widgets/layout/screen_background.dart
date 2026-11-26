@@ -9,10 +9,12 @@ import '../../theme/app_semantic_colors.dart';
 /// Figma fills the frame with the image (`FILL`, so [BoxFit.cover]) at 5 %
 /// opacity, with exposure -1, contrast -0.3, saturation -1 and highlights and
 /// shadows -1. That is a darkened greyscale line drawing; here it is a
-/// greyscale [ColorFilter] that also halves the brightness, under an
-/// [Opacity] of [patternOpacity]. Set [showPattern] to false for a plain
-/// white surface. The image is decoded no wider than the screen needs
-/// (`cacheWidth`).
+/// greyscale [ColorFilter] that also halves the brightness. The exported
+/// image already carries Figma's 5 % in its alpha (at most 13/255, a test
+/// checks it), so it is drawn as is: fading it again made the doodle all but
+/// invisible (a darkest pixel of 254 against the frames' 243). Set
+/// [showPattern] to false for a plain white surface. The image is decoded no
+/// wider than the screen needs (`cacheWidth`).
 class ScreenBackground extends StatelessWidget {
   const ScreenBackground({
     super.key,
@@ -21,8 +23,9 @@ class ScreenBackground extends StatelessWidget {
     this.color,
   });
 
-  /// Opacity of the pattern image (Figma image fill 0.05).
-  static const patternOpacity = 0.05;
+  /// Highest alpha in the exported pattern: Figma's 5 % fill opacity, baked
+  /// into the image (13/255). A test fails if a re-export drops it.
+  static const maxPatternAlpha = 13;
 
   /// Brightness of the greyscale pattern (stand-in for the exposure and
   /// shadows adjustments).
@@ -60,17 +63,14 @@ class ScreenBackground extends StatelessWidget {
                     final width = constraints.hasBoundedWidth
                         ? (constraints.maxWidth * dpr).ceil()
                         : null;
-                    return Opacity(
-                      opacity: patternOpacity,
-                      child: ColorFiltered(
-                        colorFilter: _filter,
-                        child: Image.asset(
-                          AppImages.bgPattern.path,
-                          key: const ValueKey('screen-background-pattern'),
-                          fit: BoxFit.cover,
-                          cacheWidth: width,
-                          gaplessPlayback: true,
-                        ),
+                    return ColorFiltered(
+                      colorFilter: _filter,
+                      child: Image.asset(
+                        AppImages.bgPattern.path,
+                        key: const ValueKey('screen-background-pattern'),
+                        fit: BoxFit.cover,
+                        cacheWidth: width,
+                        gaplessPlayback: true,
                       ),
                     );
                   },

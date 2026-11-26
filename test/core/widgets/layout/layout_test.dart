@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+
+import 'package:classmeet/core/assets/app_images.dart';
 import 'package:classmeet/core/theme/app_colors.dart';
 import 'package:classmeet/core/theme/app_theme.dart';
 import 'package:classmeet/core/widgets/buttons/app_button.dart';
@@ -22,16 +26,16 @@ void main() {
   const patternKey = ValueKey('screen-background-pattern');
 
   group('ScreenBackground', () {
-    testWidgets('draws the pattern at 5% over white', (tester) async {
+    testWidgets('draws the pattern as exported, over white', (tester) async {
       await pump(tester, const Scaffold(body: ScreenBackground()));
-      final opacity = tester.widget<Opacity>(
+      // The 5 % lives in the image's alpha; no second fade.
+      expect(
         find.ancestor(
           of: find.byKey(patternKey),
           matching: find.byType(Opacity),
         ),
+        findsNothing,
       );
-      expect(opacity.opacity, 0.05);
-      expect(ScreenBackground.patternOpacity, 0.05);
       final image = tester.widget<Image>(find.byKey(patternKey));
       expect(image.fit, BoxFit.cover);
       final box = tester.widget<ColoredBox>(
@@ -43,6 +47,25 @@ void main() {
             .first,
       );
       expect(box.color, AppColors.white);
+    });
+
+    testWidgets('the pattern image carries the 5 % in its alpha', (
+      tester,
+    ) async {
+      final bytes = File(AppImages.bgPattern.path).readAsBytesSync();
+      final maxAlpha = await tester.runAsync(() async {
+        final codec = await ui.instantiateImageCodec(bytes);
+        final frame = await codec.getNextFrame();
+        final data = await frame.image.toByteData();
+        var max = 0;
+        for (var i = 3; i < data!.lengthInBytes; i += 4) {
+          final a = data.getUint8(i);
+          if (a > max) max = a;
+        }
+        return max;
+      });
+      // Opaque strokes here would need the fade back (Figma fill 0.05).
+      expect(maxAlpha, ScreenBackground.maxPatternAlpha);
     });
 
     testWidgets('pattern can be disabled', (tester) async {
